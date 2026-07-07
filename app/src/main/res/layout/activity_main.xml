@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/backgroundColor">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:elevation="0dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?attr/actionBarSize"
+                android:paddingTop="36dp"
+                android:paddingBottom="12dp"
+                android:background="@color/toolbarColor"
+                app:navigationIcon="@drawable/ic_menu"
+                app:theme="@style/ThemeOverlay.App.Toolbar">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="16dp">
+
+                    <LinearLayout
+                        android:id="@+id/branding_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:contentDescription="App Logo"
+                            android:src="@drawable/ic_app_logo"
+                            app:tint="@color/brandAccent" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/my"
+                                android:textColor="@color/toolbarTextColor"
+                                android:textSize="18sp"
+                                android:letterSpacing="0.1"
+                                android:includeFontPadding="false" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:text="@string/car"
+                                android:textColor="@color/toolbarTextColor"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.1"
+                                android:includeFontPadding="false" />
+
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:id="@+id/car_profile_container"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="18dp"
+                        android:background="@drawable/bg_car_profile"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/branding_layout">
+
+                        <TextView
+                            android:id="@+id/car_initial"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="T"
+                            android:textColor="@color/black"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:includeFontPadding="false" />
+                    </FrameLayout>
+
+                    <Spinner
+                        android:id="@+id/car_selector"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="14dp"
+                        android:background="@drawable/bg_car_selector"
+                        android:overlapAnchor="false"
+                        android:spinnerMode="dropdown"
+                        android:popupBackground="@drawable/bg_dropdown"
+                        android:gravity="center_vertical"
+                        app:layout_constraintLeft_toRightOf="@id/car_profile_container"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/car_profile_container" />
+
+                        <TextView
+                            android:id="@+id/odo_display"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_odo_highlight"
+                            android:text="@string/odo_format"
+                            android:textColor="@color/toolbarTextColor"
+                            android:alpha="0.8"
+                            android:textSize="12sp"
+                            android:letterSpacing="0.05"
+                            android:includeFontPadding="false"
+                            app:layout_constraintLeft_toLeftOf="@id/car_selector"
+                            app:layout_constraintTop_toBottomOf="@id/car_selector" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/brandAccent" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <FrameLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+            app:layout_constraintTop_toBottomOf="@id/app_bar_layout">
+
+            <LinearLayout
+                android:id="@+id/main_dashboard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingTop="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:alpha="0.6"
+                    android:letterSpacing="0.1"
+                    android:text="------- Regular Fuel Intake -------"
+                    android:textColor="@color/textPrimary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/main_dashboard_fuel_type_selector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/bg_dashboard_container"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <!-- Line 1: Fuel Type and Amount -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.46"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="4dp"
+                                android:text="@string/fuel_type"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <Spinner
+                                android:id="@+id/spinner_fuel_type"
+                                android:layout_width="match_parent"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_odo_highlight"
+                                android:gravity="center"
+                                android:overlapAnchor="false"
+                                android:popupBackground="@drawable/bg_dropdown"
+                                android:spinnerMode="dropdown" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.08" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.46"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="4dp"
+                                android:text="@string/amount"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/edit_amount"
+                                android:layout_width="match_parent"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_odo_highlight"
+                                android:hint="0.0"
+                                android:gravity="center"
+                                android:inputType="numberDecimal"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="8dp"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Line 2: ODO, Price and Switch -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="bottom"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <!-- ODO Reading -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.46"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="4dp"
+                                android:text="@string/odo_reading"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/edit_odo_intake"
+                                android:layout_width="match_parent"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_odo_highlight"
+                                android:gravity="center"
+                                android:hint="00000"
+                                android:inputType="number"
+                                android:paddingStart="8dp"
+                                android:paddingEnd="8dp"
+                                android:textColor="@color/textPrimary"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- Spacer -->
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.02" />
+
+                        <!-- Fuel Price -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.34"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="4dp"
+                                android:text="@string/fuel_price_label"
+                                android:textColor="@color/textSecondary"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/edit_fuel_price"
+                                android:layout_width="match_parent"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_odo_highlight"
+                                android:gravity="center"
+                                android:inputType="numberDecimal"
+                                android:text="0.00"
+                                android:textColor="@color/brandAccent"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Switch -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.18"
+                            android:layout_gravity="bottom"
+                            android:gravity="end|bottom">
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/switch_unit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:thumbIcon="@drawable/selector_switch_thumb_icon"
+                                app:thumbIconTint="@null"
+                                app:thumbIconSize="32dp"
+                                app:thumbTint="@color/selector_switch_thumb_tint"
+                                app:trackColor="@color/selector_switch_track"
+                                app:trackDecorationTint="@null"
+                                android:layout_gravity="bottom"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- SAVE Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_save_fuel"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="12dp"
+                        android:text="S A V E"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.2"
+                        app:cornerRadius="4dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/navBackground"
+            app:itemIconTint="@color/navItemColor"
+            app:itemTextColor="@color/navItemColor"
+            app:labelVisibilityMode="unlabeled"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:menu="@menu/bottom_nav_menu" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/navBackground"
+        app:itemIconTint="@color/navItemColor"
+        app:itemTextColor="@color/navItemColor"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/drawer_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Monotone Classic Dark Palette (Obsidian & Steel) -->
+    <color name="primaryColor">#000000</color> <!-- Deepest Obsidian -->
+    <color name="primaryDark">#000000</color>
+    <color name="accentColor">#9E9E9E</color> <!-- Lighter Slate -->
+    <color name="backgroundColor">#121212</color> <!-- Soothing Dark Surface -->
+    <color name="surfaceColor">#1C1C1E</color> <!-- Slightly elevated surface -->
+
+    <!-- Beta Accent Color -->
+    <color name="brandAccent">#E5C100</color> <!-- Enhanced Gold -->
+
+    <color name="textPrimary">#E0E0E0</color>
+    <color name="textSecondary">#9E9E9E</color>
+
+    <!-- Component Colors -->
+    <color name="navBackground">@color/surfaceColor</color>
+    <color name="navItemColor">@color/accentColor</color>
+    <color name="dropdownBackground">@color/surfaceColor</color>
+    <color name="dropdownText">@color/textPrimary</color>
+    <color name="toolbarColor">@color/primaryColor</color>
+    <color name="toolbarTextColor">@color/white</color>
+    <color name="toolbarComponentBg">#22FFFFFF</color> <!-- Subtle white highlight in dark mode -->
+    <color name="toolbarComponentStroke">#1AFFFFFF</color>
+</resources>

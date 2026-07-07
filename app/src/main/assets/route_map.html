@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Car - Route Planning</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="color-scheme" content="dark light">
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: #121212; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        /* Support for system prefers-color-scheme */
+        @media (prefers-color-scheme: dark) {
+            body, html { background: #121212; color: #FFFFFF; }
+        }
+        @media (prefers-color-scheme: light) {
+            body, html { background: #F5F5F5; color: #121212; }
+        }
+
+        #map-container { height: 100%; width: 100%; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+
+        #branding-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
+            background: var(--bg-color, rgba(18, 18, 18, 0.95));
+            border-bottom: 3px solid #FFD700;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            color: var(--text-color, #FFFFFF);
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .brand-accent { color: #FFD700; margin-right: 8px; }
+
+        #status {
+            margin-left: auto;
+            font-size: 10px;
+            color: #FFD700;
+            background: rgba(255, 215, 0, 0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .loading-text {
+            color: var(--text-color, #666);
+            text-align: center;
+            font-style: italic;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div id="branding-overlay">
+            <span class="brand-accent">MY CAR</span> ROUTE
+            <div id="status">WAITING...</div>
+        </div>
+
+        <div id="init-view">
+            <div class="loading-text">Synchronizing Theme & GPS...</div>
+        </div>
+    </div>
+
+    <script>
+        var locationCaptured = false;
+        var isDarkMode = false;
+
+        function setStatus(msg) {
+            document.getElementById('status').innerText = msg.toUpperCase();
+        }
+
+        function setTheme(dark) {
+            isDarkMode = dark;
+            if (dark) {
+                document.body.style.setProperty('--bg-color', 'rgba(18, 18, 18, 0.95)');
+                document.body.style.setProperty('--text-color', '#FFFFFF');
+                document.body.style.backgroundColor = '#121212';
+            } else {
+                document.body.style.setProperty('--bg-color', 'rgba(255, 255, 255, 0.95)');
+                document.body.style.setProperty('--text-color', '#121212');
+                document.body.style.backgroundColor = '#F5F5F5';
+            }
+        }
+
+        function updateLocation(lat, lon, stationType) {
+            if (locationCaptured) return; // Prevent multiple redirects
+
+            locationCaptured = true;
+            setStatus("Searching: " + (stationType || "Fuel"));
+
+            // Use the selected station type from the spinner
+            const queryType = stationType || "Filling Station";
+            const query = encodeURIComponent(queryType);
+            let mapUrl = `https://www.google.com/maps/search/${query}/@${lat},${lon},14z`;
+
+            if (isDarkMode) {
+                mapUrl += "?hl=en&force=pwa&theme=dark";
+            }
+
+            console.log("Redirecting to Map for " + queryType);
+
+            // Redirect the top-level window instead of using an iframe
+            window.location.href = mapUrl;
+        }
+
+        // Diagnostic if location takes too long
+        setTimeout(() => {
+            if (!locationCaptured) {
+                setStatus("Check GPS Settings");
+            }
+        }, 8000);
+    </script>
+</body>
+</html>

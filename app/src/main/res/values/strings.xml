@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">My Car</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- UI Labels -->
+    <string name="my">MY</string>
+    <string name="car">CAR</string>
+    <string name="odo_format">ODO: %d km</string>
+    <string name="main_dashboard">MAIN DASHBOARD</string>
+    <string name="expense_tracking">EXPENSE TRACKING</string>
+    <string name="route_planning">ROUTE PLANNING</string>
+    <string name="data_analytics">DATA ANALYTICS</string>
+    <string name="theme_selection">THEME SELECTION</string>
+    <string name="theme_light">Light Theme</string>
+    <string name="theme_dark">Dark Theme</string>
+    <string name="theme_system">Follow System</string>
+
+    <string name="language_selection">LANGUAGE</string>
+    <string name="lang_english">English</string>
+    <string name="lang_bengali">Bengali</string>
+    <string name="lang_arabic">Arabic</string>
+    <string name="lang_french">French</string>
+
+    <string name="about_title">ABOUT</string>
+    <string name="about_description">MY CAR - CLASSIC PERFORMANCE\nVersion 1.0.0</string>
+
+    <!-- Fuel Input Labels -->
+    <string name="fuel_type">Fuel Type:</string>
+    <string name="amount">Amount:</string>
+    <string name="unit_litre">Litre</string>
+    <string name="unit_taka">Taka</string>
+    <string name="fuel_price_label">Fuel Price:</string>
+    <string name="odo_reading">ODO Reading:</string>
+
+    <string name="fuel_octane">Octane</string>
+    <string name="fuel_petrol">Petrol</string>
+    <string name="fuel_diesel">Diesel</string>
+    <string name="fuel_cng">CNG</string>
+    <string name="fuel_lpg">LPG</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_route">Route</string>
+    <string name="nav_dollar">Dollar</string>
+    <string name="nav_statistics">Statistics</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_about">About</string>
+
+    <!-- Station Types -->
+    <string name="station_filling">Filling Station</string>
+    <string name="station_gas">Gas Station</string>
+    <string name="station_lpg">LPG Station</string>
+    <string name="station_cng">CNG Station</string>
+</resources>

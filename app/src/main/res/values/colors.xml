@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Monotone Classic Palette (Graphite & Slate) -->
+    <color name="primaryColor">#1A1A1A</color> <!-- Deep Graphite -->
+    <color name="primaryDark">#000000</color> <!-- Pure Black -->
+    <color name="accentColor">#757575</color> <!-- Slate Grey -->
+    <color name="backgroundColor">#FFFFFF</color> <!-- Pure White Surface -->
+    <color name="surfaceColor">#F2F2F2</color> <!-- Light Slate Surface -->
+
+    <!-- Beta Accent Color -->
+    <color name="brandAccent">#D4AF37</color> <!-- Classic Gold Accent -->
+
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#757575</color>
+
+    <!-- Component Colors -->
+    <color name="navBackground">@color/toolbarColor</color>
+    <color name="navItemColor">@color/primaryColor</color>
+    <color name="dropdownBackground">@color/primaryColor</color>
+    <color name="dropdownText">#FAFAFA</color>
+    <color name="toolbarColor">#FAF9F6</color> <!-- Sophisticated Off-White -->
+    <color name="toolbarTextColor">@color/primaryColor</color>
+    <color name="toolbarComponentBg">#15000000</color> <!-- Subtle dark tint for components in light mode -->
+    <color name="toolbarComponentStroke">#10000000</color>
+
+    <!-- Switch Colors -->
+    <color name="switchTrackBlue">#2196F3</color>
+    <color name="switchTrackLavender">#967BB6</color>
+    <color name="dividerColor">#E0E0E0</color>
+</resources>

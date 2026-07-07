@@ -1,0 +1,23 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MyCar" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="android:statusBarColor">@color/primaryColor</item>
+        <item name="itemIconTint">@color/primaryColor</item>
+    </style>
+
+    <style name="Theme.MyCar" parent="Base.Theme.MyCar" />
+
+    <style name="ThemeOverlay.App.Toolbar" parent="ThemeOverlay.Material3.ActionBar">
+        <item name="colorControlNormal">@color/primaryColor</item>
+    </style>
+
+    <!-- Classic Monotone Bottom Nav Style -->
+    <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="itemIconTint">@color/accentColor</item>
+        <item name="itemTextColor">@color/accentColor</item>
+        <item name="backgroundTint">@color/white</item>
+    </style>
+</resources>
