@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="24dp">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/timeline_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.07" />
+
+    <View
+        android:id="@+id/sphere_day"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/ic_sphere"
+        app:layout_constraintEnd_toEndOf="@id/timeline_guideline"
+        app:layout_constraintStart_toStartOf="@id/timeline_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/card_pointer"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="@drawable/ic_pointer"
+        app:layout_constraintBottom_toBottomOf="@id/sphere_day"
+        app:layout_constraintStart_toEndOf="@id/sphere_day"
+        app:layout_constraintTop_toTopOf="@id/sphere_day" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-4dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/surfaceColor"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/brandAccent"
+        app:layout_constraintBottom_toBottomOf="@id/sphere_day"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/card_pointer"
+        app:layout_constraintTop_toTopOf="@id/sphere_day">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textSecondary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/text_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/textPrimary"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/text_summary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/brandAccent"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/expand_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_menu"
+                app:tint="@color/brandAccent" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:id="@+id/group_children_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/card_header"
+        app:layout_constraintStart_toStartOf="@id/card_header"
+        app:layout_constraintTop_toBottomOf="@id/card_header">
+        <!-- Sub-entries will be added here -->
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

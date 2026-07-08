@@ -25,6 +25,8 @@
     <string name="about_title">ABOUT</string>
     <string name="about_description">MY CAR - CLASSIC PERFORMANCE\nVersion 1.0.0</string>
 
+    <string name="amount_label">Amount: %s</string>
+
     <!-- Fuel Input Labels -->
     <string name="fuel_type">Fuel Type:</string>
     <string name="amount">Amount:</string>
@@ -42,14 +44,69 @@
     <!-- Navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_route">Route</string>
-    <string name="nav_dollar">Dollar</string>
+    <string name="nav_expenditure">Expenditure</string>
     <string name="nav_statistics">Statistics</string>
+    <string name="nav_add_trip">Add Trip</string>
+    <string name="nav_itemized_expenditure">Itemized Expenditure</string>
+    <string name="nav_fuel">Fuel</string>
+    <string name="nav_toll">Toll</string>
+    <string name="nav_maintenance">Maintenance</string>
+    <string name="nav_repair">Repair</string>
+    <string name="nav_beautification">Beautification</string>
+    <string name="nav_nearby">Nearby</string>
+    <string name="nav_filling_station">Filling Station</string>
+    <string name="nav_cng">CNG</string>
+    <string name="nav_lpg">LPG</string>
+    <string name="nav_restaurants">Restaurants</string>
+    <string name="nav_hotels">Hotels</string>
+    <string name="nav_atm">ATM</string>
+    <string name="nav_mosque">Mosque</string>
+    <string name="nav_reminder">Reminder</string>
+    <string name="nav_add_vehicle">Add a Car/ Bike</string>
     <string name="nav_settings">Settings</string>
+    <string name="nav_backup_restore">Backup &amp; Restore</string>
     <string name="nav_about">About</string>
+
+    <!-- Add Vehicle Dialog -->
+    <string name="add_vehicle_title">Add New Vehicle</string>
+    <string name="hint_model">Model (e.g. BMW M4)</string>
+    <string name="hint_reg_number">Registration Number</string>
+    <string name="hint_color">Color</string>
+    <string name="hint_odo">Initial ODO Reading</string>
+    <string name="hint_chassis">Chassis Number</string>
+    <string name="hint_engine_oil">Engine Oil Capacity (L)</string>
+    <string name="hint_tank_capacity">Tank Capacity (L)</string>
+    <string name="transmission_type">Transmission Type</string>
+    <string name="trans_manual">Manual</string>
+    <string name="trans_automatic">Automatic</string>
+    <string name="btn_add">ADD</string>
+    <string name="btn_cancel">CANCEL</string>
+    <string name="processing">Processing...</string>
+    <string name="vehicle_added">Vehicle Added Successfully!</string>
 
     <!-- Station Types -->
     <string name="station_filling">Filling Station</string>
     <string name="station_gas">Gas Station</string>
     <string name="station_lpg">LPG Station</string>
     <string name="station_cng">CNG Station</string>
+
+    <!-- Reminders -->
+    <string name="reminder_title">Reminders</string>
+    <string name="engine_oil_reminder">Engine Oil Change</string>
+    <string name="transmission_oil_reminder">Transmission Oil Change</string>
+    <string name="brake_fluid_reminder">Brake Fluid Change</string>
+    <string name="tax_date_reminder">Tax Date</string>
+    <string name="custom_reminder">Custom Reminder</string>
+    <string name="reminder_last_date">Last Change: %s</string>
+    <string name="reminder_date">Reminder Date: %s</string>
+    <string name="reminder_due_date">Due Date: %s</string>
+    <string name="reminder_set_date">Set Date</string>
+    <string name="mode_ring">Ring</string>
+    <string name="mode_vibrate">Vibrate</string>
+    <string name="mode_mute">Mute</string>
+    <string name="save_reminder">SAVE REMINDER</string>
+    <string name="reminder_saved">Reminder saved successfully</string>
+
+    <!-- AdMob -->
+    <string name="ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 </resources>

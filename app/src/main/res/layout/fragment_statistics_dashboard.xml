@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe_refresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:clipToPadding="false"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Box 1: Monthly Report -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_monthly_report"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="MONTHLY REPORT"
+                            android:textStyle="bold"
+                            android:textColor="@color/brandAccent"
+                            android:layout_marginBottom="12dp"/>
+
+                        <Spinner
+                            android:id="@+id/spinner_monthly_report"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:background="@drawable/bg_car_selector"/>
+
+                        <LinearLayout
+                            android:id="@+id/container_monthly_report"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:divider="?android:attr/dividerHorizontal"
+                            android:showDividers="middle"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Box 2: Weekly Graph -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_weekly_graph"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="WEEKLY TREND"
+                            android:textStyle="bold"
+                            android:textColor="@color/brandAccent"
+                            android:layout_marginBottom="12dp"/>
+
+                        <hobby.asad.mushad.mycar.MultiSelectSpinner
+                            android:id="@+id/filter_weekly_graph"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"/>
+
+                        <hobby.asad.mushad.mycar.SimpleLineChartView
+                            android:id="@+id/chart_weekly"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:background="#05000000"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Box 3: Yearly Report -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_yearly_report"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="YEARLY AGGREGATE"
+                            android:textStyle="bold"
+                            android:textColor="@color/brandAccent"
+                            android:layout_marginBottom="12dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="16dp">
+
+                            <Spinner android:id="@+id/spinner_year_from_month" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector"/>
+                            <EditText android:id="@+id/et_year_from" android:layout_width="80dp" android:layout_height="wrap_content" android:hint="Year" android:inputType="number" android:textSize="14sp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" to "/>
+                            <Spinner android:id="@+id/spinner_year_to_month" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector"/>
+                            <EditText android:id="@+id/et_year_to" android:layout_width="80dp" android:layout_height="wrap_content" android:hint="Year" android:inputType="number" android:textSize="14sp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/container_yearly_report"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:divider="?android:attr/dividerHorizontal"
+                            android:showDividers="middle"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Box 4: Monthly Graph -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_monthly_graph"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="MONTHLY TREND"
+                            android:textStyle="bold"
+                            android:textColor="@color/brandAccent"
+                            android:layout_marginBottom="12dp"/>
+
+                        <hobby.asad.mushad.mycar.MultiSelectSpinner
+                            android:id="@+id/filter_monthly_graph"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"/>
+
+                        <hobby.asad.mushad.mycar.SimpleLineChartView
+                            android:id="@+id/chart_monthly"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:background="#05000000"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Box 5: Comparison Table -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_comparison_table"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="VEHICLE COMPARISON"
+                            android:textStyle="bold"
+                            android:textColor="@color/brandAccent"
+                            android:layout_marginBottom="12dp"/>
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TableLayout
+                                android:id="@+id/table_comparison"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:stretchColumns="0">
+                                <!-- Rows added dynamically -->
+                            </TableLayout>
+                        </HorizontalScrollView>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Box 6: Comparison Graph -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_comparison_graph"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TOTAL EXPENDITURE COMPARISON"
+                            android:textStyle="bold"
+                            android:textColor="@color/brandAccent"
+                            android:layout_marginBottom="12dp"/>
+
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/toggle_comparison"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="16dp"
+                            app:singleSelection="true"
+                            app:checkedButton="@+id/btn_monthly">
+
+                            <Button
+                                android:id="@+id/btn_monthly"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Monthly"/>
+                            <Button
+                                android:id="@+id/btn_yearly"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Yearly"/>
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                        <hobby.asad.mushad.mycar.SimpleLineChartView
+                            android:id="@+id/chart_comparison"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:background="#05000000"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Box 7: Trip Costs -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_trip_costs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardElevation="2dp"
+                    app:cardCornerRadius="8dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TRIP COST ANALYSIS"
+                            android:textStyle="bold"
+                            android:textColor="@color/brandAccent"
+                            android:layout_marginBottom="12dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="16dp">
+                            <Spinner android:id="@+id/trip_month_from" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector"/>
+                            <Spinner android:id="@+id/trip_year_from" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector" android:layout_marginStart="4dp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" to "/>
+                            <Spinner android:id="@+id/trip_month_to" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector"/>
+                            <Spinner android:id="@+id/trip_year_to" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector" android:layout_marginStart="4dp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/container_trip_costs"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/dividerColor"
+                            android:layout_marginVertical="8dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Total Trip Costs" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tv_total_trip_cost" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0.00" android:textColor="@color/brandAccent" android:textStyle="bold"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Box 8: Export Actions -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_export_pdf"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="EXPORT THIS AS A PDF"
+                    app:cornerRadius="8dp"
+                    android:layout_marginBottom="32dp"
+                    android:backgroundTint="@color/primaryColor"
+                    android:textColor="@color/white"/>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <ProgressBar
+            android:id="@+id/loading_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/brandAccent" />
+
+    </FrameLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

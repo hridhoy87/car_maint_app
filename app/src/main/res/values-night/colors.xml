@@ -15,9 +15,11 @@
 
     <color name="textPrimary">#E0E0E0</color>
     <color name="textSecondary">#9E9E9E</color>
+    <color name="childCardBackground">#2C2C2E</color>
 
     <!-- Component Colors -->
     <color name="navBackground">@color/surfaceColor</color>
+    <color name="drawerHeaderBackground">@color/toolbarColor</color>
     <color name="navItemColor">@color/accentColor</color>
     <color name="dropdownBackground">@color/surfaceColor</color>
     <color name="dropdownText">@color/textPrimary</color>
@@ -25,4 +27,13 @@
     <color name="toolbarTextColor">@color/white</color>
     <color name="toolbarComponentBg">#22FFFFFF</color> <!-- Subtle white highlight in dark mode -->
     <color name="toolbarComponentStroke">#1AFFFFFF</color>
+
+    <color name="dividerColor">#40FFFFFF</color> <!-- Lighter/Visible border for Dark Theme -->
+    <color name="toggleSelectedBackground">@color/brandAccent</color>
+    <color name="toggleSelectedIcon">@color/black</color>
+    <color name="toggleUnselectedIcon">@color/brandAccent</color>
+    <color name="sectionBgSubtle">#12FFFFFF</color> <!-- Subtle light tint for Dark Theme -->
+    <color name="sectionBgWarmer">#1AEE9B00</color> <!-- Subtle warm/amber glow for Dark Theme -->
+    <color name="sectionBgAlert">#1AFF0000</color> <!-- Subtle reddish glow for Dark Theme -->
+    <color name="sectionBgTeal">#1A009688</color> <!-- Subtle teal glow for Dark Theme -->
 </resources>

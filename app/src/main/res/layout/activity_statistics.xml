@@ -147,11 +147,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/data_analytics"
                 android:letterSpacing="0.2"
                 android:textColor="@color/accentColor"
                 android:textStyle="bold" />
         </FrameLayout>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/ad_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:adSize="BANNER"
+            app:adUnitId="@string/ad_unit_id"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
@@ -175,6 +184,6 @@
         app:itemIconTint="@color/navItemColor"
         app:itemTextColor="@color/navItemColor"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/drawer_menu" />
+        app:menu="@menu/nav_drawer_main" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -2,14 +2,13 @@ package hobby.asad.mushad.mycar;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -20,8 +19,6 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Initialize Theme and Language before super.onCreate if possible, 
-        // but since we want to show the splash screen first, we do it here.
         SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
         
         // 1. Check Theme
@@ -44,17 +41,19 @@ public class SplashActivity extends AppCompatActivity {
 
         // Smoothly transition after a short delay
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            finish();
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        }, 2000); // 2 seconds delay for loading
+            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            // Option 1: Legacy Stabilization fix for MIUI
+            ActivityCompat.finishAfterTransition(this);
+        }, 2000);
     }
 
     private void setLocale(String languageCode) {
         Locale locale = new Locale(languageCode);
         Locale.setDefault(locale);
-        Resources resources = getResources();
-        Configuration config = resources.getConfiguration();
+        android.content.res.Resources resources = getResources();
+        android.content.res.Configuration config = resources.getConfiguration();
         config.setLocale(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }

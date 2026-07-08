@@ -11,7 +11,7 @@
     <item
         android:id="@+id/nav_dollar"
         android:icon="@drawable/ic_dollar"
-        android:title="@string/nav_dollar" />
+        android:title="@string/nav_expenditure" />
     <item
         android:id="@+id/nav_statistics"
         android:icon="@drawable/ic_statistics"

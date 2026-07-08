@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/group_primary" android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_home"
+            android:icon="@drawable/ic_home"
+            android:title="@string/nav_home" />
+        <item
+            android:id="@+id/drawer_route"
+            android:icon="@drawable/ic_route"
+            android:title="@string/nav_route" />
+        <item
+            android:id="@+id/drawer_expenditure"
+            android:icon="@drawable/ic_dollar"
+            android:title="@string/nav_expenditure" />
+        <item
+            android:id="@+id/drawer_statistics"
+            android:icon="@drawable/ic_statistics"
+            android:title="@string/nav_statistics" />
+    </group>
+
+    <group android:id="@+id/group_secondary" android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_add_trip"
+            android:icon="@drawable/ic_route"
+            android:title="@string/nav_add_trip" />
+
+        <!-- Parent Itemized Expenditure -->
+        <item
+            android:id="@+id/drawer_itemized_expenditure"
+            android:icon="@drawable/ic_unit_bdt"
+            android:title="@string/nav_itemized_expenditure" />
+
+        <!-- Sub-items for Itemized Expenditure (Hidden by default) -->
+        <item android:id="@+id/drawer_fuel" android:title="@string/nav_fuel" android:visible="false" />
+        <item android:id="@+id/drawer_toll" android:title="@string/nav_toll" android:visible="false" />
+        <item android:id="@+id/drawer_maintenance" android:title="@string/nav_maintenance" android:visible="false" />
+        <item android:id="@+id/drawer_repair" android:title="@string/nav_repair" android:visible="false" />
+        <item android:id="@+id/drawer_beautification" android:title="@string/nav_beautification" android:visible="false" />
+
+        <!-- Parent Nearby -->
+        <item
+            android:id="@+id/drawer_nearby"
+            android:icon="@drawable/ic_marker"
+            android:title="@string/nav_nearby" />
+
+        <!-- Sub-items for Nearby (Hidden by default) -->
+        <item android:id="@+id/drawer_filling_station" android:title="@string/nav_filling_station" android:visible="false" />
+        <item android:id="@+id/drawer_cng" android:title="@string/nav_cng" android:visible="false" />
+        <item android:id="@+id/drawer_lpg" android:title="@string/nav_lpg" android:visible="false" />
+        <item android:id="@+id/drawer_restaurants" android:title="Restaurants" android:visible="false" />
+        <item android:id="@+id/drawer_hotels" android:title="Hotels" android:visible="false" />
+        <item android:id="@+id/drawer_atm" android:title="ATM" android:visible="false" />
+        <item android:id="@+id/drawer_mosque" android:title="Mosque" android:visible="false" />
+
+        <item
+            android:id="@+id/drawer_reminder"
+            android:icon="@drawable/ic_reminder"
+            android:title="@string/nav_reminder" />
+    </group>
+
+    <group android:id="@+id/group_tertiary" android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_add_vehicle"
+            android:icon="@drawable/ic_add_car"
+            android:title="@string/nav_add_vehicle" />
+        <item
+            android:id="@+id/drawer_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/nav_settings" />
+        <item
+            android:id="@+id/drawer_backup_restore"
+            android:icon="@drawable/ic_menu"
+            android:title="@string/nav_backup_restore" />
+        <item
+            android:id="@+id/drawer_about"
+            android:icon="@drawable/ic_about"
+            android:title="@string/nav_about" />
+    </group>
+</menu>

@@ -140,220 +140,812 @@
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+            app:layout_constraintBottom_toTopOf="@+id/ad_view"
             app:layout_constraintTop_toBottomOf="@id/app_bar_layout">
 
-            <LinearLayout
-                android:id="@+id/main_dashboard"
+            <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:paddingTop="24dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:alpha="0.6"
-                    android:letterSpacing="0.1"
-                    android:text="------- Regular Fuel Intake -------"
-                    android:textColor="@color/textPrimary"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                android:fillViewport="true"
+                android:scrollbars="none">
 
                 <LinearLayout
-                    android:id="@+id/main_dashboard_fuel_type_selector"
+                    android:id="@+id/main_dashboard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="@drawable/bg_dashboard_container"
+                    android:gravity="center_horizontal"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:paddingTop="16dp"
+                    android:paddingBottom="24dp">
 
-                    <!-- Line 1: Fuel Type and Amount -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="6dp"
+                        android:alpha="0.6"
+                        android:letterSpacing="0.1"
+                        android:text="------- Regular Fuel Intake -------"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
                     <LinearLayout
+                        android:id="@+id/main_dashboard_fuel_type_selector"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="1">
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/bg_dashboard_container"
+                        android:backgroundTint="@color/sectionBgSubtle"
+                        android:orientation="vertical"
+                        android:padding="10dp">
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.46"
-                            android:orientation="vertical">
+                            android:orientation="horizontal"
+                            android:weightSum="1">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:text="@string/fuel_type"
-                                android:textColor="@color/textSecondary"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
+                                android:layout_weight="0.46"
+                                android:orientation="vertical">
 
-                            <Spinner
-                                android:id="@+id/spinner_fuel_type"
-                                android:layout_width="match_parent"
-                                android:layout_height="32dp"
-                                android:background="@drawable/bg_odo_highlight"
-                                android:gravity="center"
-                                android:overlapAnchor="false"
-                                android:popupBackground="@drawable/bg_dropdown"
-                                android:spinnerMode="dropdown" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/fuel_type"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <Spinner
+                                    android:id="@+id/spinner_fuel_type"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="center"
+                                    android:overlapAnchor="false"
+                                    android:popupBackground="@drawable/bg_dropdown"
+                                    android:spinnerMode="dropdown" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.08" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.46"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/amount"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight">
+
+                                    <EditText
+                                        android:id="@+id/edit_amount"
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:background="@android:color/transparent"
+                                        android:gravity="start|center_vertical"
+                                        android:hint="0.0"
+                                        android:inputType="numberDecimal"
+                                        android:paddingStart="12dp"
+                                        android:paddingEnd="4dp"
+                                        android:textColor="@color/textPrimary"
+                                        android:textSize="14sp"
+                                        app:layout_constraintEnd_toStartOf="@+id/text_amount_unit"
+                                        app:layout_constraintStart_toStartOf="parent" />
+
+                                    <TextView
+                                        android:id="@+id/text_amount_unit"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:minWidth="32dp"
+                                        android:paddingEnd="8dp"
+                                        android:text="L"
+                                        android:textColor="@color/brandAccent"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        app:layout_constraintEnd_toEndOf="parent" />
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+                            </LinearLayout>
                         </LinearLayout>
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="0.08" />
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.46"
-                            android:orientation="vertical">
+                            android:layout_marginTop="8dp"
+                            android:gravity="bottom"
+                            android:orientation="horizontal"
+                            android:weightSum="1">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:text="@string/amount"
-                                android:textColor="@color/textSecondary"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
+                                android:layout_weight="0.46"
+                                android:orientation="vertical">
 
-                            <EditText
-                                android:id="@+id/edit_amount"
-                                android:layout_width="match_parent"
-                                android:layout_height="32dp"
-                                android:background="@drawable/bg_odo_highlight"
-                                android:hint="0.0"
-                                android:gravity="center"
-                                android:inputType="numberDecimal"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:textColor="@color/textPrimary"
-                                android:textSize="14sp" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/odo_reading"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_odo_intake"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="center"
+                                    android:hint="00000"
+                                    android:inputType="number"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.02" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.34"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/fuel_price_label"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight">
+
+                                    <EditText
+                                        android:id="@+id/edit_fuel_price"
+                                        android:layout_width="0dp"
+                                        android:layout_height="match_parent"
+                                        android:background="@android:color/transparent"
+                                        android:gravity="start|center_vertical"
+                                        android:inputType="numberDecimal"
+                                        android:paddingStart="12dp"
+                                        android:paddingEnd="4dp"
+                                        android:hint="0.00"
+                                        android:textColor="@color/brandAccent"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        app:layout_constraintEnd_toStartOf="@+id/text_price_unit"
+                                        app:layout_constraintStart_toStartOf="parent" />
+
+                                    <TextView
+                                        android:id="@+id/text_price_unit"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center"
+                                        android:minWidth="32dp"
+                                        android:paddingEnd="8dp"
+                                        android:text="/L"
+                                        android:textColor="@color/brandAccent"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        app:layout_constraintEnd_toEndOf="parent" />
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.18"
+                                android:layout_gravity="bottom"
+                                android:gravity="end|bottom">
+
+                                <com.google.android.material.materialswitch.MaterialSwitch
+                                    android:id="@+id/switch_unit"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:paddingTop="12dp"
+                                    app:thumbIcon="@drawable/selector_switch_thumb_icon"
+                                    app:thumbIconTint="@null"
+                                    app:thumbIconSize="32dp"
+                                    app:thumbTint="@color/selector_switch_thumb_tint"
+                                    app:trackColor="@color/selector_switch_track"
+                                    app:trackDecorationTint="@null"
+                                    android:layout_gravity="bottom"/>
+                            </LinearLayout>
+
                         </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_save_fuel"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="10dp"
+                            android:text="S A V E"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.2"
+                            app:cornerRadius="4dp" />
+
                     </LinearLayout>
 
-                    <!-- Line 2: ODO, Price and Switch -->
+                    <!-- Periodic Maintenance Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="6dp"
+                        android:alpha="0.6"
+                        android:letterSpacing="0.1"
+                        android:text="------- Periodic Maintenance -------"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
                     <LinearLayout
+                        android:id="@+id/maintenance_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="bottom"
-                        android:orientation="horizontal"
-                        android:weightSum="1">
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/bg_dashboard_container"
+                        android:backgroundTint="@color/sectionBgWarmer"
+                        android:orientation="vertical"
+                        android:padding="10dp">
 
-                        <!-- ODO Reading -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.46"
-                            android:orientation="vertical">
+                            android:orientation="horizontal"
+                            android:weightSum="1">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:text="@string/odo_reading"
-                                android:textColor="@color/textSecondary"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
+                                android:layout_weight="0.55"
+                                android:orientation="vertical">
 
-                            <EditText
-                                android:id="@+id/edit_odo_intake"
-                                android:layout_width="match_parent"
-                                android:layout_height="32dp"
-                                android:background="@drawable/bg_odo_highlight"
-                                android:gravity="center"
-                                android:hint="00000"
-                                android:inputType="number"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="8dp"
-                                android:textColor="@color/textPrimary"
-                                android:textSize="14sp" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="Maintenance Type"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <Spinner
+                                    android:id="@+id/spinner_maintenance_type"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="center"
+                                    android:overlapAnchor="false"
+                                    android:popupBackground="@drawable/bg_dropdown"
+                                    android:spinnerMode="dropdown" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.05" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.4"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/amount"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_maintenance_amount"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="start|center_vertical"
+                                    android:hint="0.00"
+                                    android:inputType="numberDecimal"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
                         </LinearLayout>
 
-                        <!-- Spacer -->
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="0.02" />
-
-                        <!-- Fuel Price -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.34"
-                            android:orientation="vertical">
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal"
+                            android:weightSum="1">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:text="@string/fuel_price_label"
-                                android:textColor="@color/textSecondary"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
+                                android:layout_weight="0.35"
+                                android:orientation="vertical">
 
-                            <EditText
-                                android:id="@+id/edit_fuel_price"
-                                android:layout_width="match_parent"
-                                android:layout_height="32dp"
-                                android:background="@drawable/bg_odo_highlight"
-                                android:gravity="center"
-                                android:inputType="numberDecimal"
-                                android:text="0.00"
-                                android:textColor="@color/brandAccent"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/odo_reading"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_maintenance_odo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="center"
+                                    android:hint="00000"
+                                    android:inputType="number"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.05" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.6"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="Shop Name"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_shop_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="start|center_vertical"
+                                    android:hint="Enter shop name"
+                                    android:inputType="text"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
                         </LinearLayout>
 
-                        <!-- Switch -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.18"
-                            android:layout_gravity="bottom"
-                            android:gravity="end|bottom">
-
-                            <com.google.android.material.materialswitch.MaterialSwitch
-                                android:id="@+id/switch_unit"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:thumbIcon="@drawable/selector_switch_thumb_icon"
-                                app:thumbIconTint="@null"
-                                app:thumbIconSize="32dp"
-                                app:thumbTint="@color/selector_switch_thumb_tint"
-                                app:trackColor="@color/selector_switch_track"
-                                app:trackDecorationTint="@null"
-                                android:layout_gravity="bottom"/>
-                        </LinearLayout>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_save_maintenance"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="10dp"
+                            android:text="S A V E"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.2"
+                            app:cornerRadius="4dp" />
 
                     </LinearLayout>
 
-                    <!-- SAVE Button -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_save_fuel"
-                        style="@style/Widget.Material3.Button.TonalButton"
+                    <!-- Abnormal Repair Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="6dp"
+                        android:alpha="0.6"
+                        android:letterSpacing="0.1"
+                        android:text="------- Abnormal Repair -------"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/repair_container"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="12dp"
-                        android:text="S A V E"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.2"
-                        app:cornerRadius="4dp" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/bg_dashboard_container"
+                        android:backgroundTint="@color/sectionBgAlert"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="1">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.55"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="Repair Description"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_repair_title"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="start|center_vertical"
+                                    android:hint="What happened?"
+                                    android:inputType="text"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.05" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.4"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/amount"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_repair_amount"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="start|center_vertical"
+                                    android:hint="0.00"
+                                    android:inputType="numberDecimal"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal"
+                            android:weightSum="1">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.35"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/odo_reading"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_repair_odo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="center"
+                                    android:hint="00000"
+                                    android:inputType="number"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.05" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.6"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="Shop Name"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_repair_shop_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="start|center_vertical"
+                                    android:hint="Enter shop name"
+                                    android:inputType="text"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_save_repair"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="10dp"
+                            android:text="S A V E"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.2"
+                            app:cornerRadius="4dp" />
+
+                    </LinearLayout>
+
+                    <!-- Beautification | Enhancement Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="6dp"
+                        android:alpha="0.6"
+                        android:letterSpacing="0.1"
+                        android:text="------- Beautification | Enhancement -------"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/enhancement_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/bg_dashboard_container"
+                        android:backgroundTint="@color/sectionBgTeal"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="1">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.55"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="Improvement Details"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_enhancement_title"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="start|center_vertical"
+                                    android:hint="What's new?"
+                                    android:inputType="text"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.05" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.4"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/amount"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_enhancement_amount"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="start|center_vertical"
+                                    android:hint="0.00"
+                                    android:inputType="numberDecimal"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal"
+                            android:weightSum="1">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.35"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="@string/odo_reading"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_enhancement_odo"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="center"
+                                    android:hint="00000"
+                                    android:inputType="number"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="8dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="0.05" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.6"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:text="Shop Name"
+                                    android:textColor="@color/textSecondary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/edit_enhancement_shop_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="36dp"
+                                    android:background="@drawable/bg_odo_highlight"
+                                    android:gravity="start|center_vertical"
+                                    android:hint="Enter shop name"
+                                    android:inputType="text"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:textColor="@color/textPrimary"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_save_enhancement"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="10dp"
+                            android:text="S A V E"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.2"
+                            app:cornerRadius="4dp" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
-            </LinearLayout>
+            </ScrollView>
 
         </FrameLayout>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/ad_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:adSize="BANNER"
+            app:adUnitId="@string/ad_unit_id"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
@@ -377,6 +969,6 @@
         app:itemIconTint="@color/navItemColor"
         app:itemTextColor="@color/navItemColor"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/drawer_menu" />
+        app:menu="@menu/nav_drawer_main" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

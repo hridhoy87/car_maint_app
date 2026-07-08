@@ -10,6 +10,12 @@
 
     <style name="Theme.MyCar" parent="Base.Theme.MyCar" />
 
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/backgroundColor</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_app_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyCar</item>
+    </style>
+
     <style name="ThemeOverlay.App.Toolbar" parent="ThemeOverlay.Material3.ActionBar">
         <item name="colorControlNormal">@color/primaryColor</item>
     </style>
@@ -19,5 +25,18 @@
         <item name="itemIconTint">@color/accentColor</item>
         <item name="itemTextColor">@color/accentColor</item>
         <item name="backgroundTint">@color/white</item>
+    </style>
+
+    <!-- Custom Rounded Semi-Transparent Dialog -->
+    <style name="CustomDialogTheme" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.5</item>
+        <item name="editTextStyle">@style/CustomEditTextStyle</item>
+    </style>
+
+    <style name="CustomEditTextStyle" parent="android:Widget.EditText">
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:textColorHint">@color/textSecondary</item>
     </style>
 </resources>
