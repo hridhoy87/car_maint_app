@@ -42,6 +42,11 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.play.services.ads)
     implementation(libs.swiperefreshlayout)
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    annotationProcessor(libs.room.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)

@@ -16,6 +16,8 @@ public class DollarActivity extends BaseActivity {
 
     private LinearLayout timelineContainer;
     private View loadingProgress;
+    private View notificationBanner;
+    private TextView bannerText;
 
     @Override
     protected int getLayoutResId() {
@@ -32,10 +34,15 @@ public class DollarActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         timelineContainer = findViewById(R.id.timeline_container);
         loadingProgress = findViewById(R.id.loading_progress);
+        notificationBanner = findViewById(R.id.notification_banner);
+        bannerText = findViewById(R.id.banner_text);
+        
+        setupBannerSwipe(notificationBanner);
     }
 
     @Override
     protected void onCarSelected(String carName, int position) {
+        if (notificationBanner != null) notificationBanner.setVisibility(View.GONE);
         loadExpenditureData(carName);
     }
 
@@ -48,18 +55,33 @@ public class DollarActivity extends BaseActivity {
             public void onSuccess(JSONObject data) {
                 if (loadingProgress != null) loadingProgress.setVisibility(View.GONE);
                 try {
-                    renderTimeline(data.getJSONArray("entries"));
+                    boolean hasData = data.optBoolean("hasData", false);
+                    if (!hasData) {
+                        showEmptyBanner(carName);
+                    } else {
+                        if (notificationBanner != null) notificationBanner.setVisibility(View.GONE);
+                        renderTimeline(data.getJSONArray("entries"));
+                    }
                 } catch (JSONException e) {
-                    Toast.makeText(DollarActivity.this, "Error parsing data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DollarActivity.this, R.string.error_parsing, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onError(String error) {
                 if (loadingProgress != null) loadingProgress.setVisibility(View.GONE);
-                Toast.makeText(DollarActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(DollarActivity.this, getString(R.string.error_prefix, error), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showEmptyBanner(String carName) {
+        if (notificationBanner != null && bannerText != null) {
+            bannerText.setText(getString(R.string.no_data_for_vehicle, carName));
+            notificationBanner.setVisibility(View.VISIBLE);
+            notificationBanner.setAlpha(1f);
+            notificationBanner.setTranslationX(0f);
+        }
     }
 
     private void renderTimeline(JSONArray entries) throws JSONException {

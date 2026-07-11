@@ -232,7 +232,7 @@ public class RouteActivity extends BaseActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 requestLocationUpdates();
             } else {
-                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.error_location_denied, Toast.LENGTH_SHORT).show();
             }
         }
     }

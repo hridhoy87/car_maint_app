@@ -34,18 +34,27 @@ public class StatisticsDashboardFragment extends Fragment {
     private SwipeRefreshLayout swipeRefresh;
     private NestedScrollView scrollView;
     private ProgressBar loadingProgress;
-    private LinearLayout containerMonthlyReport, containerYearlyReport, containerTripCosts;
+    private LinearLayout containerMonthlyReport, containerTripCosts;
     private MultiSelectSpinner filterWeeklyGraph, filterMonthlyGraph;
     private SimpleLineChartView chartWeekly, chartMonthly, chartComparison;
     private TableLayout tableComparison;
     private TextView tvTotalTripCost;
+    private View notificationBanner;
+    private TextView bannerText;
     
     private String activeFilter = null;
-    private final String[] heads = {"Total", "Toll", "Fuel - Octane", "Fuel - LPG", "Maintenance", "Repair", "Beautification", "All"};
+    private String currentCarName = "";
+    private String[] heads;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        heads = new String[]{
+                getString(R.string.head_total), getString(R.string.head_toll),
+                getString(R.string.head_fuel), getString(R.string.head_maintenance),
+                getString(R.string.head_repair), getString(R.string.head_beautification),
+                getString(R.string.head_all)
+        };
         return inflater.inflate(R.layout.fragment_statistics_dashboard, container, false);
     }
 
@@ -62,12 +71,24 @@ public class StatisticsDashboardFragment extends Fragment {
         setupFilters();
         setupToggle(view);
 
-        startLazyLoading();
-
         swipeRefresh.setOnRefreshListener(this::startLazyLoading);
 
         view.findViewById(R.id.btn_export_pdf).setOnClickListener(v -> 
-            Toast.makeText(getContext(), "Exporting as PDF...", Toast.LENGTH_SHORT).show());
+            Toast.makeText(getContext(), R.string.exporting_pdf, Toast.LENGTH_SHORT).show());
+    }
+
+    public void onCarSelected(String carName) {
+        if (notificationBanner != null) notificationBanner.setVisibility(View.GONE);
+        startLazyLoading();
+    }
+
+    private void showEmptyBanner(String carName) {
+        if (notificationBanner != null && bannerText != null) {
+            bannerText.setText(getString(R.string.no_data_for_vehicle, carName));
+            notificationBanner.setVisibility(View.VISIBLE);
+            notificationBanner.setAlpha(1f);
+            notificationBanner.setTranslationX(0f);
+        }
     }
 
     private void initViews(View v) {
@@ -76,7 +97,6 @@ public class StatisticsDashboardFragment extends Fragment {
         loadingProgress = v.findViewById(R.id.loading_progress);
         
         containerMonthlyReport = v.findViewById(R.id.container_monthly_report);
-        containerYearlyReport = v.findViewById(R.id.container_yearly_report);
         containerTripCosts = v.findViewById(R.id.container_trip_costs);
         filterWeeklyGraph = v.findViewById(R.id.filter_weekly_graph);
         filterMonthlyGraph = v.findViewById(R.id.filter_monthly_graph);
@@ -85,10 +105,21 @@ public class StatisticsDashboardFragment extends Fragment {
         chartComparison = v.findViewById(R.id.chart_comparison);
         tableComparison = v.findViewById(R.id.table_comparison);
         tvTotalTripCost = v.findViewById(R.id.tv_total_trip_cost);
+        notificationBanner = v.findViewById(R.id.notification_banner);
+        bannerText = v.findViewById(R.id.banner_text);
+        
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).setupBannerSwipe(notificationBanner);
+        }
     }
 
     private void setupSpinners(View view) {
-        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+        String[] months = {
+                getString(R.string.month_jan), getString(R.string.month_feb), getString(R.string.month_mar),
+                getString(R.string.month_apr), getString(R.string.month_may), getString(R.string.month_jun),
+                getString(R.string.month_jul), getString(R.string.month_aug), getString(R.string.month_sep),
+                getString(R.string.month_oct), getString(R.string.month_nov), getString(R.string.month_dec)
+        };
         ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, months);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -114,14 +145,14 @@ public class StatisticsDashboardFragment extends Fragment {
             filterMonthlyGraph.setSelection(new String[]{activeFilter});
         }
 
-        filterWeeklyGraph.setOnSelectionChangedListener(selection -> updateWeeklyChart(selection));
-        filterMonthlyGraph.setOnSelectionChangedListener(selection -> updateMonthlyChart(selection));
+        filterWeeklyGraph.setOnSelectionChangedListener(selection -> updateWeeklyChart(currentCarName, selection));
+        filterMonthlyGraph.setOnSelectionChangedListener(selection -> updateMonthlyChart(currentCarName, selection));
     }
 
     private void setupToggle(View view) {
         MaterialButtonToggleGroup toggle = view.findViewById(R.id.toggle_comparison);
         toggle.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (isChecked) updateComparisonChart();
+            if (isChecked) updateComparisonChart(currentCarName);
         });
     }
 
@@ -130,39 +161,53 @@ public class StatisticsDashboardFragment extends Fragment {
         scrollView.setVisibility(View.GONE);
         swipeRefresh.setRefreshing(false);
 
-        Handler handler = new Handler(Looper.getMainLooper());
-        
-        handler.postDelayed(() -> {
-            populateReport(containerMonthlyReport, new double[]{50, 200, 150, 100, 300, 50});
-        }, 500);
-
-        handler.postDelayed(() -> {
-            populateReport(containerYearlyReport, new double[]{600, 2400, 1800, 1200, 3600, 600});
-        }, 1000);
-
-        handler.postDelayed(() -> {
-            populateTripCosts();
-            populateComparisonTable();
-            updateCharts();
-            
-            loadingProgress.setVisibility(View.GONE);
-            scrollView.setVisibility(View.VISIBLE);
-        }, 1500);
-    }
-
-    private void populateReport(LinearLayout container, double[] values) {
-        container.removeAllViews();
-        String[] labels = {"Toll", "Fuel - Octane", "Fuel - LPG", "Maintenance", "Repair", "Beautification"};
-        double total = 0;
-        for (int i = 0; i < labels.length; i++) {
-            if (activeFilter == null || labels[i].equalsIgnoreCase(activeFilter) || activeFilter.equalsIgnoreCase("Total")) {
-                addReportRow(container, labels[i], String.format(Locale.US, "$%.2f", values[i]), false);
-                total += values[i];
+        currentCarName = ""; 
+        if (getActivity() != null) {
+            Spinner carSelector = getActivity().findViewById(R.id.car_selector);
+            if (carSelector != null && carSelector.getSelectedItem() != null) {
+                currentCarName = carSelector.getSelectedItem().toString();
             }
         }
-        if (activeFilter == null || activeFilter.equalsIgnoreCase("Total")) {
-            addReportRow(container, "Total", String.format(Locale.US, "$%.2f", total), true);
-        }
+
+        final String carName = currentCarName;
+        DataRepository.fetchStatisticsData(requireContext(), carName, activeFilter, new DataRepository.DataCallback() {
+            @Override
+            public void onSuccess(org.json.JSONObject data) {
+                try {
+                    boolean hasData = data.optBoolean("hasData", false);
+                    if (!hasData) {
+                        showEmptyBanner(carName);
+                    } else {
+                        if (notificationBanner != null) notificationBanner.setVisibility(View.GONE);
+                    }
+
+                    org.json.JSONArray report = data.getJSONArray("report");
+                    containerMonthlyReport.removeAllViews();
+                    for (int i = 0; i < report.length(); i++) {
+                        org.json.JSONObject row = report.getJSONObject(i);
+                        addReportRow(containerMonthlyReport, row.getString("label"), 
+                                String.format(Locale.US, "$%.2f", row.getDouble("amount")), false);
+                    }
+                    addReportRow(containerMonthlyReport, getString(R.string.head_total), 
+                            String.format(Locale.US, "$%.2f", data.getDouble("total")), true);
+
+                    populateTripCosts(carName);
+                    populateComparisonTable();
+                    updateCharts(carName);
+
+                    loadingProgress.setVisibility(View.GONE);
+                    scrollView.setVisibility(View.VISIBLE);
+                } catch (org.json.JSONException e) {
+                    onError(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                loadingProgress.setVisibility(View.GONE);
+                Toast.makeText(getContext(), getString(R.string.error_prefix, error), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void addReportRow(LinearLayout container, String label, String value, boolean isTotal) {
@@ -182,55 +227,111 @@ public class StatisticsDashboardFragment extends Fragment {
         container.addView(row);
     }
 
-    private void populateTripCosts() {
+    private void populateTripCosts(String carName) {
         containerTripCosts.removeAllViews();
-        String[] trips = {"Trip to City Center - $15.00", "Weekend Getaway - $120.00", "Business Meet - $45.00"};
-        for (String trip : trips) {
-            TextView tv = new TextView(getContext());
-            tv.setText(trip);
-            tv.setPadding(0, 8, 0, 8);
-            containerTripCosts.addView(tv);
-            View divider = new View(getContext());
-            divider.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1));
-            divider.setBackgroundColor(Color.LTGRAY);
-            containerTripCosts.addView(divider);
-        }
-        tvTotalTripCost.setText("$180.00");
+        new Thread(() -> {
+            try {
+                hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(requireContext());
+                hobby.asad.mushad.mycar.database.Vehicle vehicle = db.vehicleDao().getVehicleByModel(carName);
+                if (vehicle == null) return;
+
+                java.util.List<hobby.asad.mushad.mycar.database.Expenditure> trips = db.expenditureDao().getExpendituresByCategory(vehicle.id, "TRIP");
+                double total = 0;
+                
+                final double finalTotal = total;
+                java.util.List<View> views = new java.util.ArrayList<>();
+                
+                for (hobby.asad.mushad.mycar.database.Expenditure trip : trips) {
+                    total += trip.amount;
+                    TextView tv = new TextView(getContext());
+                    tv.setText(String.format(Locale.US, "%s - $%.2f", trip.title, trip.amount));
+                    tv.setPadding(0, 8, 0, 8);
+                    views.add(tv);
+                    View divider = new View(getContext());
+                    divider.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1));
+                    divider.setBackgroundColor(Color.LTGRAY);
+                    views.add(divider);
+                }
+
+                final double updatedTotal = total;
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                    for (View v : views) containerTripCosts.addView(v);
+                    tvTotalTripCost.setText(String.format(Locale.US, "$%.2f", updatedTotal));
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void populateComparisonTable() {
         tableComparison.removeAllViews();
-        String[] headers = {"Vehicle", "Toll", "Octane", "LPG", "Maint.", "Repair", "Beauty"};
+        String[] headers = {
+                getString(R.string.table_vehicle), getString(R.string.head_toll), 
+                getString(R.string.head_fuel), getString(R.string.table_maint), 
+                getString(R.string.head_repair), getString(R.string.table_beauty)
+        };
         TableRow headerRow = new TableRow(getContext());
+
+        android.util.TypedValue typedValue = new android.util.TypedValue();
+        requireContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorSurfaceVariant, typedValue, true);
+        int headerBg = typedValue.data;
+        requireContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnSurfaceVariant, typedValue, true);
+        int headerText = typedValue.data;
+        requireContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true);
+        int dataText = typedValue.data;
+
         for (String h : headers) {
             TextView tv = new TextView(getContext());
             tv.setText(h);
             tv.setPadding(16, 16, 16, 16);
             tv.setTypeface(null, android.graphics.Typeface.BOLD);
-            tv.setBackgroundColor(Color.parseColor("#F0F0F0"));
+            tv.setBackgroundColor(headerBg);
+            tv.setTextColor(headerText);
             headerRow.addView(tv);
         }
         tableComparison.addView(headerRow);
 
-        String[][] data = {
-            {"Tesla S", "10", "0", "0", "50", "20", "10"},
-            {"Porsche 911", "20", "150", "0", "100", "50", "30"},
-            {"BMW M4", "15", "120", "0", "80", "40", "20"}
-        };
+        new Thread(() -> {
+            hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(requireContext());
+            java.util.List<hobby.asad.mushad.mycar.database.Vehicle> vehicles = db.vehicleDao().getAllVehicles();
 
-        for (String[] rowData : data) {
-            TableRow row = new TableRow(getContext());
-            for (String cell : rowData) {
-                TextView tv = new TextView(getContext());
-                tv.setText(cell);
-                tv.setPadding(16, 16, 16, 16);
-                row.addView(tv);
+            for (hobby.asad.mushad.mycar.database.Vehicle v : vehicles) {
+                double toll = getAmount(db, v.id, "TOLL");
+                double fuel = getAmount(db, v.id, "FUEL");
+                double maint = getAmount(db, v.id, "MAINTENANCE");
+                double repair = getAmount(db, v.id, "REPAIR");
+                double beauty = getAmount(db, v.id, "BEAUTIFICATION");
+
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                    TableRow row = new TableRow(getContext());
+                    String[] rowData = {
+                        v.model, 
+                        String.format(Locale.US, "%.0f", toll),
+                        String.format(Locale.US, "%.0f", fuel),
+                        String.format(Locale.US, "%.0f", maint),
+                        String.format(Locale.US, "%.0f", repair),
+                        String.format(Locale.US, "%.0f", beauty)
+                    };
+                    for (String cell : rowData) {
+                        TextView tv = new TextView(getContext());
+                        tv.setText(cell);
+                        tv.setPadding(16, 16, 16, 16);
+                        tv.setTextColor(dataText);
+                        row.addView(tv);
+                    }
+                    tableComparison.addView(row);
+                });
             }
-            tableComparison.addView(row);
-        }
+        }).start();
     }
 
-    private void updateCharts() {
+    private double getAmount(hobby.asad.mushad.mycar.database.AppDatabase db, String vehicleId, String category) {
+        Double amt = db.expenditureDao().getTotalAmountByCategory(vehicleId, category);
+        return amt != null ? amt : 0.0;
+    }
+
+    private void updateCharts(String carName) {
         boolean[] selection = new boolean[heads.length];
         if (activeFilter != null) {
             for (int i = 0; i < heads.length; i++) {
@@ -240,64 +341,87 @@ public class StatisticsDashboardFragment extends Fragment {
                 }
             }
         }
-        updateWeeklyChart(selection);
-        updateMonthlyChart(selection);
-        updateComparisonChart();
+        updateWeeklyChart(carName, selection);
+        updateMonthlyChart(carName, selection);
+        updateComparisonChart(carName);
     }
 
-    private void updateWeeklyChart(boolean[] selection) {
-        chartWeekly.setData(getDataForSelection(selection, 7));
+    private void updateWeeklyChart(String carName, boolean[] selection) {
+        getDataForSelection(carName, selection, 7, data -> {
+            chartWeekly.setData(data);
+        });
     }
 
-    private void updateMonthlyChart(boolean[] selection) {
-        chartMonthly.setData(getDataForSelection(selection, 12));
+    private void updateMonthlyChart(String carName, boolean[] selection) {
+        getDataForSelection(carName, selection, 12, data -> {
+            chartMonthly.setData(data);
+        });
     }
 
-    private List<List<Float>> getDataForSelection(boolean[] selection, int pointsCount) {
-        List<List<Float>> results = new ArrayList<>();
-        boolean anySelected = false;
-        
-        // Handle "All" selection
-        int allIndex = -1;
-        for(int i=0; i<heads.length; i++) {
-            if(heads[i].equalsIgnoreCase("All")) allIndex = i;
-        }
-        
-        if (allIndex != -1 && selection[allIndex]) {
-            for (int i = 0; i < heads.length; i++) {
-                if (!heads[i].equalsIgnoreCase("All")) {
-                    results.add(generateRandomData(pointsCount));
+    interface ChartDataCallback {
+        void onDataReady(List<List<Float>> data);
+    }
+
+    private void getDataForSelection(String carName, boolean[] selection, int pointsCount, ChartDataCallback callback) {
+        new Thread(() -> {
+            List<List<Float>> results = new ArrayList<>();
+            try {
+                hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(requireContext());
+                hobby.asad.mushad.mycar.database.Vehicle vehicle = db.vehicleDao().getVehicleByModel(carName);
+                if (vehicle == null) {
+                    new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> callback.onDataReady(results));
+                    return;
                 }
-            }
-            return results;
-        }
 
-        for (int i = 0; i < selection.length; i++) {
-            if (selection[i]) {
-                results.add(generateRandomData(pointsCount));
-                anySelected = true;
+                // Map UI head to DB category
+                java.util.Map<String, String> headToCat = new java.util.HashMap<>();
+                headToCat.put("Toll", "TOLL");
+                headToCat.put("Fuel", "FUEL");
+                headToCat.put("Maintenance", "MAINTENANCE");
+                headToCat.put("Repair", "REPAIR");
+                headToCat.put("Beautification", "BEAUTIFICATION");
+
+                long now = System.currentTimeMillis();
+                long step = pointsCount == 7 ? 86400000L : 2592000000L; // Day vs 30 Days approx
+
+                boolean anySelected = false;
+                int allIndex = -1;
+                for(int i=0; i<heads.length; i++) {
+                    if(heads[i].equalsIgnoreCase("All")) allIndex = i;
+                }
+
+                for (int i = 0; i < heads.length; i++) {
+                    if (selection[i] || (allIndex != -1 && selection[allIndex] && !heads[i].equalsIgnoreCase("All"))) {
+                        String cat = headToCat.get(heads[i]);
+                        if (cat != null) {
+                            List<Float> row = new ArrayList<>();
+                            for (int p = pointsCount - 1; p >= 0; p--) {
+                                long end = now - (p * step);
+                                long start = end - step;
+                                Double amt = db.expenditureDao().getTotalAmountByCategoryAndDateRange(vehicle.id, cat, start, end);
+                                row.add(amt != null ? amt.floatValue() : 0f);
+                            }
+                            results.add(row);
+                            anySelected = true;
+                        }
+                    }
+                }
+
+                if (!anySelected) {
+                    results.add(new ArrayList<>(java.util.Collections.nCopies(pointsCount, 0f)));
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
-        
-        // Default if nothing selected
-        if (!anySelected) {
-            results.add(generateRandomData(pointsCount));
-        }
-        
-        return results;
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> callback.onDataReady(results));
+        }).start();
     }
 
-    private void updateComparisonChart() {
-        List<List<Float>> comparisonData = new ArrayList<>();
-        comparisonData.add(generateRandomData(10));
-        chartComparison.setData(comparisonData);
-    }
-
-    private List<Float> generateRandomData(int count) {
-        List<Float> data = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            data.add((float) (Math.random() * 100));
-        }
-        return data;
+    private void updateComparisonChart(String carName) {
+        // Just show the current vehicle data for now, or multiple if we want comparison
+        getDataForSelection(carName, new boolean[heads.length], 10, data -> {
+             chartComparison.setData(data);
+        });
     }
 }

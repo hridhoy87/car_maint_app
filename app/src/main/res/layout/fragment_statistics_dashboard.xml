@@ -9,13 +9,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scroll_view"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="8dp"
-            android:clipToPadding="false"
-            android:visibility="gone">
+            android:layout_height="match_parent">
+
+            <include layout="@layout/layout_notification_banner" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:clipToPadding="false"
+                android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -40,7 +46,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="MONTHLY REPORT"
+                            android:text="@string/title_monthly_report"
                             android:textStyle="bold"
                             android:textColor="@color/brandAccent"
                             android:layout_marginBottom="12dp"/>
@@ -81,7 +87,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="WEEKLY TREND"
+                            android:text="@string/title_weekly_trend"
                             android:textStyle="bold"
                             android:textColor="@color/brandAccent"
                             android:layout_marginBottom="12dp"/>
@@ -119,7 +125,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="YEARLY AGGREGATE"
+                            android:text="@string/title_yearly_aggregate"
                             android:textStyle="bold"
                             android:textColor="@color/brandAccent"
                             android:layout_marginBottom="12dp"/>
@@ -132,10 +138,10 @@
                             android:layout_marginBottom="16dp">
 
                             <Spinner android:id="@+id/spinner_year_from_month" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector"/>
-                            <EditText android:id="@+id/et_year_from" android:layout_width="80dp" android:layout_height="wrap_content" android:hint="Year" android:inputType="number" android:textSize="14sp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" to "/>
+                            <EditText android:id="@+id/et_year_from" android:layout_width="80dp" android:layout_height="wrap_content" android:hint="@string/year" android:inputType="number" android:textSize="14sp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/to_range"/>
                             <Spinner android:id="@+id/spinner_year_to_month" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector"/>
-                            <EditText android:id="@+id/et_year_to" android:layout_width="80dp" android:layout_height="wrap_content" android:hint="Year" android:inputType="number" android:textSize="14sp"/>
+                            <EditText android:id="@+id/et_year_to" android:layout_width="80dp" android:layout_height="wrap_content" android:hint="@string/year" android:inputType="number" android:textSize="14sp"/>
                         </LinearLayout>
 
                         <LinearLayout
@@ -167,7 +173,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="MONTHLY TREND"
+                            android:text="@string/title_monthly_trend"
                             android:textStyle="bold"
                             android:textColor="@color/brandAccent"
                             android:layout_marginBottom="12dp"/>
@@ -205,7 +211,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="VEHICLE COMPARISON"
+                            android:text="@string/title_vehicle_comparison"
                             android:textStyle="bold"
                             android:textColor="@color/brandAccent"
                             android:layout_marginBottom="12dp"/>
@@ -244,7 +250,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="TOTAL EXPENDITURE COMPARISON"
+                            android:text="@string/title_expenditure_comparison"
                             android:textStyle="bold"
                             android:textColor="@color/brandAccent"
                             android:layout_marginBottom="12dp"/>
@@ -263,13 +269,13 @@
                                 style="?attr/materialButtonOutlinedStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Monthly"/>
+                                android:text="@string/btn_monthly"/>
                             <Button
                                 android:id="@+id/btn_yearly"
                                 style="?attr/materialButtonOutlinedStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Yearly"/>
+                                android:text="@string/btn_yearly"/>
                         </com.google.android.material.button.MaterialButtonToggleGroup>
 
                         <hobby.asad.mushad.mycar.SimpleLineChartView
@@ -299,7 +305,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="TRIP COST ANALYSIS"
+                            android:text="@string/title_trip_analysis"
                             android:textStyle="bold"
                             android:textColor="@color/brandAccent"
                             android:layout_marginBottom="12dp"/>
@@ -311,7 +317,7 @@
                             android:layout_marginBottom="16dp">
                             <Spinner android:id="@+id/trip_month_from" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector"/>
                             <Spinner android:id="@+id/trip_year_from" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector" android:layout_marginStart="4dp"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text=" to "/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/to_range"/>
                             <Spinner android:id="@+id/trip_month_to" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector"/>
                             <Spinner android:id="@+id/trip_year_to" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/bg_car_selector" android:layout_marginStart="4dp"/>
                         </LinearLayout>
@@ -332,7 +338,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Total Trip Costs" android:textStyle="bold"/>
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/label_total_trip_costs" android:textStyle="bold"/>
                             <TextView android:id="@+id/tv_total_trip_cost" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0.00" android:textColor="@color/brandAccent" android:textStyle="bold"/>
                         </LinearLayout>
 
@@ -344,7 +350,7 @@
                     android:id="@+id/btn_export_pdf"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:text="EXPORT THIS AS A PDF"
+                    android:text="@string/btn_export_pdf_caps"
                     app:cornerRadius="8dp"
                     android:layout_marginBottom="32dp"
                     android:backgroundTint="@color/primaryColor"
@@ -352,6 +358,7 @@
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <ProgressBar
             android:id="@+id/loading_progress"

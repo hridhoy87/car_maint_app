@@ -16,6 +16,9 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+import hobby.asad.mushad.mycar.database.AppDatabase;
+import hobby.asad.mushad.mycar.database.Expenditure;
+
 public class ReminderManager {
     private static final String PREF_NAME = "reminders_prefs";
     private static final String KEY_REMINDERS = "reminders_list";
@@ -52,7 +55,45 @@ public class ReminderManager {
         if (list.isEmpty()) {
             list = getDefaultReminders(context);
         }
+        
         return list;
+    }
+
+    public static void refreshLastMaintenanceDates(Context context, List<Reminder> reminders) {
+        AppDatabase db = AppDatabase.getDatabase(context);
+        boolean changed = false;
+        for (Reminder r : reminders) {
+            String keyword = null;
+            switch (r.getType()) {
+                case "OIL": keyword = "Oil"; break;
+                case "TRANS": keyword = "Transmission"; break;
+                case "BRAKE": keyword = "Brake"; break;
+            }
+            
+            if (keyword != null) {
+                Expenditure last = db.expenditureDao().getLastEntryByKeyword(keyword);
+                if (last != null && last.date != r.getLastDate()) {
+                    r.setLastDate(last.date);
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            saveRemindersQuietly(context, reminders);
+        }
+    }
+
+    private static void saveRemindersQuietly(Context context, List<Reminder> reminders) {
+        SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        JSONArray array = new JSONArray();
+        for (Reminder r : reminders) {
+            try {
+                array.put(new org.json.JSONObject(r.toJson()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        prefs.edit().putString(KEY_REMINDERS, array.toString()).apply();
     }
 
     private static List<Reminder> getDefaultReminders(Context context) {
@@ -72,6 +113,8 @@ public class ReminderManager {
             intent.putExtra("reminder_id", r.getId());
             intent.putExtra("reminder_title", r.getTitle());
             intent.putExtra("notification_mode", r.getNotificationMode());
+            intent.putExtra("tone_uri", r.getToneUri());
+            intent.putExtra("volume", r.getVolume());
             
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context, 
@@ -109,23 +152,10 @@ public class ReminderManager {
     }
 
     public static long calculateDueDate(String type, long lastDate) {
-        if (lastDate <= 0) return 0;
-        
-        LocalDate date = Instant.ofEpochMilli(lastDate).atZone(ZoneId.systemDefault()).toLocalDate();
-        switch (type) {
-            case "OIL":
-                // 3.5 months = 3 months + 15 days
-                date = date.plusMonths(3).plusDays(15);
-                break;
-            case "TRANS":
-                date = date.plusYears(1);
-                break;
-            case "BRAKE":
-                date = date.plusMonths(9);
-                break;
-            default:
-                return lastDate; // For TAX and CUSTOM, user sets the date directly
-        }
-        return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        // Task b: User selects the date, it's fixed. 
+        // So this method might be obsolete for new selections, but let's keep it 
+        // if we want some default suggestion. 
+        // The user said: "The date user will select, it will be fixed for reminder."
+        return lastDate;
     }
 }

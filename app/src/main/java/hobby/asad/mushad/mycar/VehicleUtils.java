@@ -65,42 +65,80 @@ public class VehicleUtils {
             String reg = editReg.getText().toString();
             
             if (model.isEmpty() || reg.isEmpty()) {
-                Toast.makeText(context, "Model and Reg Number are required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.error_model_reg_required, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             try {
-                JSONObject json = new JSONObject();
-                json.put("model", model);
-                json.put("reg_number", reg);
-                json.put("color", editColor.getText().toString());
-                json.put("odo", editOdo.getText().toString());
-                json.put("transmission", spinnerTrans.getSelectedItem().toString());
-                json.put("chassis_number", editChassis.getText().toString());
-                json.put("tank_capacity", editTank.getText().toString());
-                json.put("engine_oil_capacity", editOil.getText().toString());
-
-                // Log the JSON
-                android.util.Log.d("AddVehicle", "Vehicle Data: " + json.toString(4));
-
                 // Transition to Loading
                 formContainer.setVisibility(View.GONE);
                 buttonContainer.setVisibility(View.GONE);
                 dialogTitle.setVisibility(View.GONE);
                 loadingContainer.setVisibility(View.VISIBLE);
 
-                // Simulate processing delay
-                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-                    loadingContainer.setVisibility(View.GONE);
-                    successContainer.setVisibility(View.VISIBLE);
+                String modelVal = editModel.getText().toString();
+                String regVal = editReg.getText().toString();
+                String colorVal = editColor.getText().toString();
+                String odoVal = editOdo.getText().toString();
+                String transVal = spinnerTrans.getSelectedItem().toString();
+                String chassisVal = editChassis.getText().toString();
+                String tankVal = editTank.getText().toString();
+                String oilVal = editOil.getText().toString();
 
-                    // Dismiss dialog after success
-                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(dialog::dismiss, 1500);
-                }, 2000);
+                new Thread(() -> {
+                    try {
+                        hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(context);
+                        hobby.asad.mushad.mycar.database.Vehicle vehicle = new hobby.asad.mushad.mycar.database.Vehicle();
+                        vehicle.model = modelVal;
+                        vehicle.registrationNumber = regVal;
+                        vehicle.color = colorVal;
+                        try {
+                            vehicle.currentOdometer = Integer.parseInt(odoVal);
+                        } catch (NumberFormatException e) {
+                            vehicle.currentOdometer = 0;
+                        }
+                        vehicle.transmissionType = transVal;
+                        vehicle.chassisNumber = chassisVal;
+                        try {
+                            vehicle.tankCapacity = Double.parseDouble(tankVal);
+                        } catch (NumberFormatException e) {
+                            vehicle.tankCapacity = 0.0;
+                        }
+                        try {
+                            vehicle.engineOilCapacity = Double.parseDouble(oilVal);
+                        } catch (NumberFormatException e) {
+                            vehicle.engineOilCapacity = 0.0;
+                        }
 
-            } catch (JSONException e) {
+                        db.vehicleDao().insert(vehicle);
+
+                        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                            loadingContainer.setVisibility(View.GONE);
+                            successContainer.setVisibility(View.VISIBLE);
+
+                            // Dismiss dialog after success
+                            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                                dialog.dismiss();
+                                // Trigger refresh if context is BaseActivity
+                                if (context instanceof BaseActivity) {
+                                    ((BaseActivity) context).recreate();
+                                }
+                            }, 1500);
+                        }, 1000);
+                    } catch (Exception e) {
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                            Toast.makeText(context, context.getString(R.string.error_saving_vehicle, e.getMessage()), Toast.LENGTH_SHORT).show();
+                            formContainer.setVisibility(View.VISIBLE);
+                            buttonContainer.setVisibility(View.VISIBLE);
+                            dialogTitle.setVisibility(View.VISIBLE);
+                            loadingContainer.setVisibility(View.GONE);
+                        });
+                    }
+                }).start();
+
+            } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(context, "Error processing data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.error_processing, Toast.LENGTH_SHORT).show();
             }
         });
     }

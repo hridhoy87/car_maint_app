@@ -43,6 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected TextView toolbarCarInitial, toolbarOdoDisplay;
     protected Spinner carSelector;
     protected AdView adView;
+    protected java.util.List<hobby.asad.mushad.mycar.database.Vehicle> vehiclesList = new java.util.ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -142,14 +143,14 @@ public abstract class BaseActivity extends AppCompatActivity {
                 else if (id == R.id.drawer_reminder) navigateTo(ReminderActivity.class);
                 else if (id == R.id.drawer_settings) navigateTo(SettingsActivity.class);
                 else if (id == R.id.drawer_add_vehicle) VehicleUtils.showAddVehicleDialog(this);
-                else if (id == R.id.drawer_about) Toast.makeText(this, "MY CAR - CLASSIC PERFORMANCE v1.0", Toast.LENGTH_SHORT).show();
+                else if (id == R.id.drawer_about) Toast.makeText(this, R.string.about_toast, Toast.LENGTH_SHORT).show();
                 else if (id == R.id.drawer_filling_station) navigateToRouteWithQuery(getString(R.string.station_filling));
                 else if (id == R.id.drawer_cng) navigateToRouteWithQuery(getString(R.string.station_cng));
                 else if (id == R.id.drawer_lpg) navigateToRouteWithQuery(getString(R.string.station_lpg));
-                else if (id == R.id.drawer_restaurants) navigateToRouteWithQuery("Restaurants");
-                else if (id == R.id.drawer_hotels) navigateToRouteWithQuery("Hotels");
-                else if (id == R.id.drawer_atm) navigateToRouteWithQuery("ATM");
-                else if (id == R.id.drawer_mosque) navigateToRouteWithQuery("Mosque");
+                else if (id == R.id.drawer_restaurants) navigateToRouteWithQuery(getString(R.string.nav_restaurants_label));
+                else if (id == R.id.drawer_hotels) navigateToRouteWithQuery(getString(R.string.nav_hotels_label));
+                else if (id == R.id.drawer_atm) navigateToRouteWithQuery(getString(R.string.nav_atm_label));
+                else if (id == R.id.drawer_mosque) navigateToRouteWithQuery(getString(R.string.nav_mosque_label));
                 else if (id == R.id.drawer_fuel) navigateToStatisticsWithFilter(getString(R.string.nav_fuel));
                 else if (id == R.id.drawer_toll) navigateToStatisticsWithFilter(getString(R.string.nav_toll));
                 else if (id == R.id.drawer_maintenance) navigateToStatisticsWithFilter(getString(R.string.nav_maintenance));
@@ -162,7 +163,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     toggleSubMenu(R.id.drawer_filling_station, R.id.drawer_cng, R.id.drawer_lpg, R.id.drawer_restaurants, R.id.drawer_hotels, R.id.drawer_atm, R.id.drawer_mosque);
                     return true;
                 } else if (id == R.id.drawer_add_trip || id == R.id.drawer_backup_restore) {
-                    Toast.makeText(this, "Coming Soon!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.coming_soon, Toast.LENGTH_SHORT).show();
                 }
                 
                 if (drawerLayout != null) {
@@ -210,7 +211,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void navigateTo(Class<?> cls) {
         if (this.getClass() == cls) return;
-        Intent intent = new Intent(this, cls);
+        
+        Intent intent;
+        if (cls == StatisticsActivity.class) {
+            intent = new Intent(this, AdActivity.class);
+            Intent target = new Intent(this, StatisticsActivity.class);
+            intent.putExtra("TARGET_INTENT", target);
+        } else {
+            intent = new Intent(this, cls);
+        }
+        
         if (cls == MainActivity.class) {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         }
@@ -247,11 +257,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void navigateToStatisticsWithFilter(String filter) {
-        Intent intent = new Intent(this, StatisticsActivity.class);
-        intent.putExtra("STAT_FILTER", filter);
+        Intent target = new Intent(this, StatisticsActivity.class);
+        target.putExtra("STAT_FILTER", filter);
         if (this.getClass() == StatisticsActivity.class) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            target.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         }
+
+        Intent intent = new Intent(this, AdActivity.class);
+        intent.putExtra("TARGET_INTENT", target);
+
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         if (this.getClass() != MainActivity.class && this.getClass() != StatisticsActivity.class) {
@@ -259,48 +273,132 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    private void setupCarSelector() {
-        String[] cars = {"TESLA MODEL S", "PORSCHE 911", "BMW M4", "AUDI RS6"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, android.R.id.text1, cars);
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        carSelector.setAdapter(adapter);
-
-        SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
-        int lastSelected = prefs.getInt("selected_car_index", 0);
-        carSelector.setSelection(lastSelected);
-
-        carSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            private boolean isFirstSelection = true;
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                prefs.edit().putInt("selected_car_index", position).apply();
-                String selectedCar = cars[position];
-                updateCarUI(selectedCar, position);
-
-                if (isFirstSelection) {
-                    isFirstSelection = false;
-                    // Defer initial trigger to ensure child activities are fully ready
-                    new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> 
-                        onCarSelected(selectedCar, position));
-                } else {
-                    onCarSelected(selectedCar, position);
+    protected void setupCarSelector() {
+        new Thread(() -> {
+            hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(this);
+            java.util.List<hobby.asad.mushad.mycar.database.Vehicle> vehicles = db.vehicleDao().getAllVehicles();
+            
+            java.util.List<String> modelNames = new java.util.ArrayList<>();
+            if (vehicles.isEmpty()) {
+                modelNames.add(getString(R.string.no_vehicles_available));
+            } else {
+                for (hobby.asad.mushad.mycar.database.Vehicle v : vehicles) {
+                    modelNames.add(v.model != null ? v.model : getString(R.string.unknown_model));
                 }
             }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
+
+            String[] carsArray = modelNames.toArray(new String[0]);
+
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                this.vehiclesList = vehicles;
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, android.R.id.text1, carsArray);
+                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+                carSelector.setAdapter(adapter);
+
+                SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
+                int lastSelected = prefs.getInt("selected_car_index", 0);
+                if (lastSelected >= carsArray.length) lastSelected = 0;
+                carSelector.setSelection(lastSelected);
+
+                carSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    private boolean isFirstSelection = true;
+
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        prefs.edit().putInt("selected_car_index", position).apply();
+                        String selectedCar = carsArray[position];
+                        
+                        int odo = 0;
+                        if (!vehicles.isEmpty() && position < vehicles.size()) {
+                            odo = vehicles.get(position).currentOdometer;
+                        }
+                        
+                        updateCarUI(selectedCar, odo);
+
+                        if (isFirstSelection) {
+                            isFirstSelection = false;
+                            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> 
+                                onCarSelected(selectedCar, position));
+                        } else {
+                            onCarSelected(selectedCar, position);
+                        }
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {}
+                });
+            });
+        }).start();
     }
 
-    private void updateCarUI(String selectedCar, int position) {
+    private void updateCarUI(String selectedCar, int odo) {
+        if (getString(R.string.no_vehicles_available).equals(selectedCar)) {
+            if (toolbarCarInitial != null) toolbarCarInitial.setText("-");
+            if (toolbarOdoDisplay != null) toolbarOdoDisplay.setText(getString(R.string.odo_format, 0));
+            if (drawerCarInitial != null) drawerCarInitial.setText("-");
+            if (drawerCarName != null) drawerCarName.setText(R.string.no_vehicle);
+            if (drawerCarOdo != null) drawerCarOdo.setText(getString(R.string.odo_format, 0));
+            return;
+        }
         if (toolbarCarInitial != null) toolbarCarInitial.setText(String.valueOf(selectedCar.charAt(0)));
-        if (toolbarOdoDisplay != null) toolbarOdoDisplay.setText(getString(R.string.odo_format, (12345 + (position * 5000))));
+        if (toolbarOdoDisplay != null) toolbarOdoDisplay.setText(getString(R.string.odo_format, odo));
         if (drawerCarInitial != null) drawerCarInitial.setText(String.valueOf(selectedCar.charAt(0)));
         if (drawerCarName != null) drawerCarName.setText(selectedCar);
-        if (drawerCarOdo != null) drawerCarOdo.setText(getString(R.string.odo_format, (12345 + (position * 5000))));
+        if (drawerCarOdo != null) drawerCarOdo.setText(getString(R.string.odo_format, odo));
     }
 
     protected void onCarSelected(String carName, int position) {}
+
+    public void updateVehicleOdo(String vehicleId, int newOdo) {
+        for (int i = 0; i < vehiclesList.size(); i++) {
+            hobby.asad.mushad.mycar.database.Vehicle v = vehiclesList.get(i);
+            if (v.id.equals(vehicleId)) {
+                if (newOdo > v.currentOdometer) {
+                    v.currentOdometer = newOdo;
+                    if (carSelector != null && carSelector.getSelectedItemPosition() == i) {
+                        updateCarUI(v.model, newOdo);
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    protected String getSelectedVehicleId() {
+        if (carSelector != null && !vehiclesList.isEmpty()) {
+            int position = carSelector.getSelectedItemPosition();
+            if (position >= 0 && position < vehiclesList.size()) {
+                return vehiclesList.get(position).id;
+            }
+        }
+        return null;
+    }
+
+    protected void setupBannerSwipe(View banner) {
+        if (banner == null) return;
+        
+        androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams params = 
+            (androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams) banner.getLayoutParams();
+            
+        com.google.android.material.behavior.SwipeDismissBehavior<View> swipe = 
+            new com.google.android.material.behavior.SwipeDismissBehavior<>();
+            
+        swipe.setSwipeDirection(com.google.android.material.behavior.SwipeDismissBehavior.SWIPE_DIRECTION_ANY);
+        
+        swipe.setListener(new com.google.android.material.behavior.SwipeDismissBehavior.OnDismissListener() {
+            @Override
+            public void onDismiss(View view) {
+                banner.setVisibility(View.GONE);
+                // Reset alpha and translation for next time it might be shown
+                banner.setAlpha(1f);
+                banner.setTranslationX(0f);
+            }
+
+            @Override
+            public void onDragStateChanged(int state) {}
+        });
+        
+        params.setBehavior(swipe);
+    }
 
     private void toggleSubMenu(int... ids) {
         if (navigationView == null) return;

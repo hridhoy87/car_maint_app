@@ -30,7 +30,7 @@ public class MainActivity extends BaseActivity {
     private MaterialSwitch switchUnit;
 
     // Maintenance Views
-    private Spinner maintenanceSpinner;
+    private MultiSelectSpinner maintenanceSpinner;
     private EditText editMaintenanceAmount;
     private EditText editMaintenanceOdo;
     private EditText editShopName;
@@ -124,11 +124,11 @@ public class MainActivity extends BaseActivity {
         if (textAmountUnit == null) return;
         
         if (!isCurrency) {
-            textAmountUnit.setText("L");
+            textAmountUnit.setText(R.string.unit_litre_short);
         } else {
-            if ("fr".equalsIgnoreCase(lang)) textAmountUnit.setText("EUR");
-            else if ("ar".equalsIgnoreCase(lang)) textAmountUnit.setText("SAR");
-            else textAmountUnit.setText("BDT");
+            if ("fr".equalsIgnoreCase(lang)) textAmountUnit.setText(R.string.unit_eur);
+            else if ("ar".equalsIgnoreCase(lang)) textAmountUnit.setText(R.string.unit_sar);
+            else textAmountUnit.setText(R.string.unit_bdt);
         }
     }
 
@@ -179,14 +179,12 @@ public class MainActivity extends BaseActivity {
 
     private void setupMaintenanceSelector() {
         String[] maintenanceTypes = {
-                "Engine Oil", "Break Fluid", "Transmission Fluid", 
-                "Tire Replacement", "Breakpad Replacement", 
-                "Clutch Plate Replacement", "Wiper Replacement"
+                getString(R.string.maint_engine_oil), getString(R.string.maint_brake_fluid), getString(R.string.maint_trans_fluid), 
+                getString(R.string.maint_tire), getString(R.string.maint_brake_pad), 
+                getString(R.string.maint_clutch), getString(R.string.maint_wiper), getString(R.string.maint_all)
         };
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, android.R.id.text1, maintenanceTypes);
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        maintenanceSpinner.setAdapter(adapter);
+        maintenanceSpinner.setItems(maintenanceTypes);
 
         findViewById(R.id.btn_save_maintenance).setOnClickListener(v -> handleSaveMaintenance());
     }
@@ -211,28 +209,32 @@ public class MainActivity extends BaseActivity {
     }
 
     private void handleSaveFuel() {
-        String veh = carSelector.getSelectedItem().toString();
-        String odoOld = toolbarOdoDisplay.getText().toString().replaceAll("[^0-9]", "");
+        String vehicleId = getSelectedVehicleId();
+        if (vehicleId == null) {
+            Toast.makeText(this, R.string.error_select_vehicle, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String odoNew = editOdoIntake.getText().toString();
         String fuelType = fuelSpinner.getSelectedItem().toString();
         String pricePerL = editFuelPrice.getText().toString();
         String inputVal = editAmount.getText().toString();
 
         if (odoNew.isEmpty() || inputVal.isEmpty() || pricePerL.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_fill_fields, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double pricePerLVal = parseDoubleSafe(pricePerL);
+        double inputValNum = parseDoubleSafe(inputVal);
+
+        if (pricePerLVal <= 0 || inputValNum <= 0) {
+            Toast.makeText(this, R.string.error_valid_numeric, Toast.LENGTH_SHORT).show();
             return;
         }
 
         double amountL;
         double fuelPrice;
-        
-        double pricePerLVal = parseDoubleSafe(pricePerL);
-        double inputValNum = parseDoubleSafe(inputVal);
-
-        if (pricePerLVal <= 0 || inputValNum <= 0) {
-            Toast.makeText(this, "Please enter valid numeric values", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         if (!switchUnit.isChecked()) {
             amountL = inputValNum;
@@ -242,102 +244,251 @@ public class MainActivity extends BaseActivity {
             amountL = fuelPrice / pricePerLVal;
         }
 
-        String msg = String.format(Locale.US,
-                "Veh: %s\nODO_old: %s\nODO_new: %s\nFuelType: %s\nAmount: %.2f L\nFuelPrice: %.2f\nFuelPricePerL: %s",
-                veh, odoOld, odoNew, fuelType, amountL, fuelPrice, pricePerL);
+        new Thread(() -> {
+            try {
+                hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(this);
+                hobby.asad.mushad.mycar.database.Expenditure exp = new hobby.asad.mushad.mycar.database.Expenditure();
+                exp.vehicleId = vehicleId;
+                exp.category = "FUEL";
+                exp.title = getString(R.string.fuel_title_format, fuelType);
+                exp.amount = fuelPrice;
+                exp.fuelQuantity = amountL;
+                exp.fuelPricePerUnit = pricePerLVal;
+                exp.odometer = Integer.parseInt(odoNew);
+                exp.date = System.currentTimeMillis();
 
-        new AlertDialog.Builder(this)
-                .setTitle("Fuel Intake Details")
-                .setMessage(msg)
-                .setPositiveButton("OK", null)
-                .show();
+                db.expenditureDao().insert(exp);
+
+                // Update vehicle odometer
+                hobby.asad.mushad.mycar.database.Vehicle v = db.vehicleDao().getVehicleById(vehicleId);
+                if (v != null && exp.odometer > v.currentOdometer) {
+                    v.currentOdometer = exp.odometer;
+                    db.vehicleDao().update(v);
+                }
+
+                runOnUiThread(() -> {
+                    Toast.makeText(this, R.string.fuel_record_saved, Toast.LENGTH_SHORT).show();
+                    editAmount.setText("");
+                    editOdoIntake.setText("");
+                    updateVehicleOdo(vehicleId, exp.odometer);
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> Toast.makeText(this, getString(R.string.error_saving, e.getMessage()), Toast.LENGTH_SHORT).show());
+            }
+        }).start();
     }
 
     private void handleSaveMaintenance() {
-        String veh = carSelector.getSelectedItem() != null ? carSelector.getSelectedItem().toString() : "";
-        String odoOld = toolbarOdoDisplay != null ? toolbarOdoDisplay.getText().toString().replaceAll("[^0-9]", "") : "";
+        String vehicleId = getSelectedVehicleId();
+        if (vehicleId == null) {
+            Toast.makeText(this, R.string.error_select_vehicle, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String odoNew = editMaintenanceOdo.getText().toString();
-        String type = maintenanceSpinner.getSelectedItem() != null ? maintenanceSpinner.getSelectedItem().toString() : "";
+        String type = maintenanceSpinner.getSelectedItemsFormatted();
         String amount = editMaintenanceAmount.getText().toString();
         String shop = editShopName.getText().toString();
 
-        if (odoNew.isEmpty() || amount.isEmpty() || shop.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+        if (odoNew.isEmpty() || amount.isEmpty() || shop.isEmpty() || type.isEmpty()) {
+            Toast.makeText(this, R.string.error_fill_fields, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (parseDoubleSafe(amount) <= 0) {
-            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+        double amountVal = parseDoubleSafe(amount);
+        if (amountVal <= 0) {
+            Toast.makeText(this, R.string.error_valid_amount, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String msg = String.format(Locale.US,
-                "Veh: %s\nODO_old: %s\nODO_new: %s\nMaintenance: %s\nAmount: %s\nShop: %s",
-                veh, odoOld, odoNew, type, amount, shop);
+        new Thread(() -> {
+            try {
+                hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(this);
+                hobby.asad.mushad.mycar.database.Expenditure exp = new hobby.asad.mushad.mycar.database.Expenditure();
+                exp.vehicleId = vehicleId;
+                exp.category = "MAINTENANCE";
+                exp.title = type;
+                exp.amount = amountVal;
+                exp.shopName = shop;
+                exp.odometer = Integer.parseInt(odoNew);
+                exp.date = System.currentTimeMillis();
 
-        new AlertDialog.Builder(this)
-                .setTitle("Maintenance Details")
-                .setMessage(msg)
-                .setPositiveButton("OK", null)
-                .show();
+                db.expenditureDao().insert(exp);
+
+                // Update vehicle odometer
+                hobby.asad.mushad.mycar.database.Vehicle v = db.vehicleDao().getVehicleById(vehicleId);
+                if (v != null && exp.odometer > v.currentOdometer) {
+                    v.currentOdometer = exp.odometer;
+                    db.vehicleDao().update(v);
+                }
+
+                runOnUiThread(() -> {
+                    Toast.makeText(this, R.string.maintenance_record_saved, Toast.LENGTH_SHORT).show();
+                    editMaintenanceAmount.setText("");
+                    editMaintenanceOdo.setText("");
+                    editShopName.setText("");
+                    updateVehicleOdo(vehicleId, exp.odometer);
+                    checkAndShowReminderAlert(exp.title);
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> Toast.makeText(this, getString(R.string.error_saving, e.getMessage()), Toast.LENGTH_SHORT).show());
+            }
+        }).start();
+    }
+
+    private void checkAndShowReminderAlert(String title) {
+        String type = null;
+        String tLow = title.toLowerCase();
+        if (tLow.contains("oil")) type = "OIL";
+        else if (tLow.contains("transmission")) type = "TRANS";
+        else if (tLow.contains("brake")) type = "BRAKE";
+
+        if (type != null) {
+            String finalType = type;
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle(R.string.set_reminder)
+                    .setMessage(R.string.reminder_alert_message)
+                    .setPositiveButton(R.string.yes, (dialog, which) -> showDatePickerForReminder(finalType, title))
+                    .setNegativeButton(R.string.no, null)
+                    .show();
+        }
+    }
+
+    private void showDatePickerForReminder(String type, String title) {
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        android.app.DatePickerDialog datePickerDialog = new android.app.DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            java.util.Calendar selected = java.util.Calendar.getInstance();
+            selected.set(year, month, dayOfMonth);
+            long dueDate = selected.getTimeInMillis();
+
+            java.util.List<Reminder> reminders = ReminderManager.loadReminders(this);
+            for (Reminder r : reminders) {
+                if (type.equals(r.getType())) {
+                    r.setDueDate(dueDate);
+                    r.setEnabled(true);
+                    break;
+                }
+            }
+            ReminderManager.saveReminders(this, reminders);
+            Toast.makeText(this, getString(R.string.reminder_set_for, title), Toast.LENGTH_SHORT).show();
+        }, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(java.util.Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
     }
 
     private void handleSaveRepair() {
-        String veh = carSelector.getSelectedItem() != null ? carSelector.getSelectedItem().toString() : "";
-        String odoOld = toolbarOdoDisplay != null ? toolbarOdoDisplay.getText().toString().replaceAll("[^0-9]", "") : "";
+        String vehicleId = getSelectedVehicleId();
+        if (vehicleId == null) {
+            Toast.makeText(this, R.string.error_select_vehicle, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String odoNew = editRepairOdo.getText().toString();
         String title = editRepairTitle.getText().toString();
         String amount = editRepairAmount.getText().toString();
         String shop = editRepairShopName.getText().toString();
 
         if (odoNew.isEmpty() || title.isEmpty() || amount.isEmpty() || shop.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_fill_fields, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (parseDoubleSafe(amount) <= 0) {
-            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+        double amountVal = parseDoubleSafe(amount);
+        if (amountVal <= 0) {
+            Toast.makeText(this, R.string.error_valid_amount, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String msg = String.format(Locale.US,
-                "Veh: %s\nODO_old: %s\nODO_new: %s\nRepair: %s\nAmount: %s\nShop: %s",
-                veh, odoOld, odoNew, title, amount, shop);
+        new Thread(() -> {
+            try {
+                hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(this);
+                hobby.asad.mushad.mycar.database.Expenditure exp = new hobby.asad.mushad.mycar.database.Expenditure();
+                exp.vehicleId = vehicleId;
+                exp.category = "REPAIR";
+                exp.title = title;
+                exp.amount = amountVal;
+                exp.shopName = shop;
+                exp.odometer = Integer.parseInt(odoNew);
+                exp.date = System.currentTimeMillis();
 
-        new AlertDialog.Builder(this)
-                .setTitle("Abnormal Repair Details")
-                .setMessage(msg)
-                .setPositiveButton("OK", null)
-                .show();
+                db.expenditureDao().insert(exp);
+
+                // Update vehicle odometer
+                hobby.asad.mushad.mycar.database.Vehicle v = db.vehicleDao().getVehicleById(vehicleId);
+                if (v != null && exp.odometer > v.currentOdometer) {
+                    v.currentOdometer = exp.odometer;
+                    db.vehicleDao().update(v);
+                }
+
+                runOnUiThread(() -> {
+                    Toast.makeText(this, R.string.repair_record_saved, Toast.LENGTH_SHORT).show();
+                    editRepairTitle.setText("");
+                    editRepairAmount.setText("");
+                    editRepairOdo.setText("");
+                    editRepairShopName.setText("");
+                    updateVehicleOdo(vehicleId, exp.odometer);
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> Toast.makeText(this, getString(R.string.error_saving, e.getMessage()), Toast.LENGTH_SHORT).show());
+            }
+        }).start();
     }
 
     private void handleSaveEnhancement() {
-        String veh = carSelector.getSelectedItem() != null ? carSelector.getSelectedItem().toString() : "";
-        String odoOld = toolbarOdoDisplay != null ? toolbarOdoDisplay.getText().toString().replaceAll("[^0-9]", "") : "";
+        String vehicleId = getSelectedVehicleId();
+        if (vehicleId == null) {
+            Toast.makeText(this, R.string.error_select_vehicle, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String odoNew = editEnhancementOdo.getText().toString();
         String title = editEnhancementTitle.getText().toString();
         String amount = editEnhancementAmount.getText().toString();
         String shop = editEnhancementShopName.getText().toString();
 
         if (odoNew.isEmpty() || title.isEmpty() || amount.isEmpty() || shop.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_fill_fields, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (parseDoubleSafe(amount) <= 0) {
-            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show();
+        double amountVal = parseDoubleSafe(amount);
+        if (amountVal <= 0) {
+            Toast.makeText(this, R.string.error_valid_amount, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String msg = String.format(Locale.US,
-                "Veh: %s\nODO_old: %s\nODO_new: %s\nEnhancement: %s\nAmount: %s\nShop: %s",
-                veh, odoOld, odoNew, title, amount, shop);
+        new Thread(() -> {
+            try {
+                hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(this);
+                hobby.asad.mushad.mycar.database.Expenditure exp = new hobby.asad.mushad.mycar.database.Expenditure();
+                exp.vehicleId = vehicleId;
+                exp.category = "BEAUTIFICATION";
+                exp.title = title;
+                exp.amount = amountVal;
+                exp.shopName = shop;
+                exp.odometer = Integer.parseInt(odoNew);
+                exp.date = System.currentTimeMillis();
 
-        new AlertDialog.Builder(this)
-                .setTitle("Enhancement Details")
-                .setMessage(msg)
-                .setPositiveButton("OK", null)
-                .show();
+                db.expenditureDao().insert(exp);
+
+                // Update vehicle odometer
+                hobby.asad.mushad.mycar.database.Vehicle v = db.vehicleDao().getVehicleById(vehicleId);
+                if (v != null && exp.odometer > v.currentOdometer) {
+                    v.currentOdometer = exp.odometer;
+                    db.vehicleDao().update(v);
+                }
+
+                runOnUiThread(() -> {
+                    Toast.makeText(this, R.string.enhancement_record_saved, Toast.LENGTH_SHORT).show();
+                    editEnhancementTitle.setText("");
+                    editEnhancementAmount.setText("");
+                    editEnhancementOdo.setText("");
+                    editEnhancementShopName.setText("");
+                    updateVehicleOdo(vehicleId, exp.odometer);
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> Toast.makeText(this, getString(R.string.error_saving, e.getMessage()), Toast.LENGTH_SHORT).show());
+            }
+        }).start();
     }
 
     @Override

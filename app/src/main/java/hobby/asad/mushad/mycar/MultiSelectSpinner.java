@@ -59,12 +59,25 @@ public class MultiSelectSpinner extends AppCompatTextView {
         updateText();
     }
 
+    public String getSelectedItemsFormatted() {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (int i = 0; i < items.length; i++) {
+            if (selection[i] && !items[i].equalsIgnoreCase("All")) {
+                if (!first) sb.append("|");
+                sb.append(items[i]);
+                first = false;
+            }
+        }
+        return sb.toString();
+    }
+
     private void showDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Select Categories");
+        builder.setTitle(R.string.title_select_categories);
         builder.setMultiChoiceItems(items, selection, (dialog, which, isChecked) -> {
             selection[which] = isChecked;
-            if (items[which].equals("All")) {
+            if (items[which].equals("All") || items[which].equals(getContext().getString(R.string.head_all))) {
                 Arrays.fill(selection, isChecked);
                 ((AlertDialog)dialog).getListView().setItemChecked(which, isChecked);
                 for(int i=0; i<items.length; i++) {
@@ -72,7 +85,7 @@ public class MultiSelectSpinner extends AppCompatTextView {
                 }
             }
         });
-        builder.setPositiveButton("OK", (dialog, which) -> {
+        builder.setPositiveButton(R.string.btn_ok, (dialog, which) -> {
             updateText();
             if (listener != null) listener.onSelectionChanged(selection);
         });
@@ -89,8 +102,8 @@ public class MultiSelectSpinner extends AppCompatTextView {
                 count++;
             }
         }
-        if (count == 0) setText("Select...");
-        else if (count == items.length) setText("All Selected");
+        if (count == 0) setText(R.string.select_placeholder);
+        else if (count == items.length) setText(R.string.all_selected);
         else setText(sb.toString());
     }
 }

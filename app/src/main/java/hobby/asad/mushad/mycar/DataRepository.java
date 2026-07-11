@@ -1,7 +1,6 @@
 package hobby.asad.mushad.mycar;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -9,7 +8,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import hobby.asad.mushad.mycar.database.AppDatabase;
+import hobby.asad.mushad.mycar.database.Expenditure;
+import hobby.asad.mushad.mycar.database.Vehicle;
+
 public class DataRepository {
+
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
+    private static final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     public interface DataCallback {
         void onSuccess(JSONObject data);
@@ -17,74 +35,124 @@ public class DataRepository {
     }
 
     public static void fetchExpenditureData(Context context, String carName, DataCallback callback) {
-        // Simulate loading delay
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        executor.execute(() -> {
             try {
-                // Check cache first
-                SharedPreferences prefs = context.getSharedPreferences("expenditure_cache", Context.MODE_PRIVATE);
-                String cachedData = prefs.getString(carName, null);
+                AppDatabase db = AppDatabase.getDatabase(context);
+                Vehicle vehicle = db.vehicleDao().getVehicleByModel(carName);
 
-                if (cachedData != null) {
-                    callback.onSuccess(new JSONObject(cachedData));
+                if (vehicle == null) {
+                    mainHandler.post(() -> callback.onError(context.getString(R.string.error_vehicle_not_found)));
                     return;
                 }
 
-                // Simulate DB Fetch / JSON creation
-                JSONObject root = new JSONObject();
-                JSONArray entries = new JSONArray();
-
-                // Dummy Entry 1
-                JSONObject entry1 = new JSONObject();
-                entry1.put("type", "single");
-                entry1.put("date", "Oct 24, 2023");
-                entry1.put("title", "Full Tank Refuel");
-                entry1.put("amount", "$85.00");
-                entries.put(entry1);
-
-                // Dummy Group Entry
-                JSONObject group = new JSONObject();
-                group.put("type", "group");
-                group.put("date", "Oct 22, 2023");
-                group.put("title", "Maintenance Day");
-                group.put("summary", "3 Items • Click to expand");
+                List<Expenditure> allEntries = db.expenditureDao().getExpendituresForVehicle(vehicle.id);
+                int totalCount = allEntries.size();
                 
-                JSONArray children = new JSONArray();
-                JSONObject child1 = new JSONObject();
-                child1.put("title", "Oil Change");
-                child1.put("amount", "$120.00");
-                children.put(child1);
+                JSONObject root = new JSONObject();
+                root.put("hasData", totalCount > 0);
+                root.put("vehicleName", carName);
+                JSONArray entriesArray = new JSONArray();
 
-                JSONObject child2 = new JSONObject();
-                child2.put("title", "Tire Rotation");
-                child2.put("amount", "$40.00");
-                children.put(child2);
+                // Group by date
+                Map<String, List<Expenditure>> groupedByDate = new LinkedHashMap<>();
+                for (Expenditure e : allEntries) {
+                    String dayKey = dayFormat.format(new Date(e.date));
+                    if (!groupedByDate.containsKey(dayKey)) {
+                        groupedByDate.put(dayKey, new ArrayList<>());
+                    }
+                    groupedByDate.get(dayKey).add(e);
+                }
 
-                JSONObject child3 = new JSONObject();
-                child3.put("title", "Car Wash");
-                child3.put("amount", "$15.00");
-                children.put(child3);
+                for (Map.Entry<String, List<Expenditure>> entry : groupedByDate.entrySet()) {
+                    List<Expenditure> dayItems = entry.getValue();
+                    String formattedDate = dateFormat.format(new Date(dayItems.get(0).date));
+                    
+                    if (dayItems.size() == 1) {
+                        Expenditure exp = dayItems.get(0);
+                        JSONObject entryJson = new JSONObject();
+                        entryJson.put("type", "single");
+                        entryJson.put("date", formattedDate);
+                        entryJson.put("title", formatTitle(exp.title));
+                        entryJson.put("amount", String.format(Locale.US, "$%.2f", exp.amount));
+                        entriesArray.put(entryJson);
+                    } else {
+                        JSONObject groupJson = new JSONObject();
+                        groupJson.put("type", "group");
+                        groupJson.put("date", formattedDate);
+                        groupJson.put("title", context.getString(R.string.daily_activities));
+                        groupJson.put("summary", context.getString(R.string.items_summary, dayItems.size()));
+                        
+                        JSONArray childrenArray = new JSONArray();
+                        for (Expenditure child : dayItems) {
+                            JSONObject childJson = new JSONObject();
+                            childJson.put("title", formatTitle(child.title));
+                            childJson.put("amount", String.format(Locale.US, "$%.2f", child.amount));
+                            childrenArray.put(childJson);
+                        }
+                        groupJson.put("children", childrenArray);
+                        entriesArray.put(groupJson);
+                    }
+                }
 
-                group.put("children", children);
-                entries.put(group);
+                root.put("entries", entriesArray);
 
-                // Dummy Entry 3
-                JSONObject entry3 = new JSONObject();
-                entry3.put("type", "single");
-                entry3.put("date", "Oct 15, 2023");
-                entry3.put("title", "Parking Fee");
-                entry3.put("amount", "$10.00");
-                entries.put(entry3);
+                mainHandler.post(() -> callback.onSuccess(root));
 
-                root.put("entries", entries);
-
-                // Save to cache
-                prefs.edit().putString(carName, root.toString()).apply();
-
-                callback.onSuccess(root);
-
-            } catch (JSONException e) {
-                callback.onError(e.getMessage());
+            } catch (Exception e) {
+                mainHandler.post(() -> callback.onError(e.getMessage()));
             }
-        }, 1500); // 1.5 second delay
+        });
+    }
+
+    private static String formatTitle(String title) {
+        if (title == null) return "";
+        return title.replace("|", ", ");
+    }
+
+    /**
+     * Helper to fetch statistics data for the dashboard
+     */
+    public static void fetchStatisticsData(Context context, String carName, String categoryFilter, DataCallback callback) {
+        executor.execute(() -> {
+            try {
+                AppDatabase db = AppDatabase.getDatabase(context);
+                Vehicle vehicle = db.vehicleDao().getVehicleByModel(carName);
+
+                if (vehicle == null) {
+                    mainHandler.post(() -> callback.onError(context.getString(R.string.error_vehicle_not_found)));
+                    return;
+                }
+
+                JSONObject result = new JSONObject();
+                int totalCount = db.expenditureDao().getExpenditureCount(vehicle.id);
+                result.put("hasData", totalCount > 0);
+                result.put("vehicleName", carName);
+
+                String[] categories = {"TOLL", "FUEL", "MAINTENANCE", "REPAIR", "BEAUTIFICATION"};
+                JSONArray reportArray = new JSONArray();
+                double totalAmount = 0;
+
+                for (String cat : categories) {
+                    if (categoryFilter == null || categoryFilter.equalsIgnoreCase("All") || categoryFilter.equalsIgnoreCase("Total") || cat.equalsIgnoreCase(categoryFilter)) {
+                        Double amount = db.expenditureDao().getTotalAmountByCategory(vehicle.id, cat);
+                        double val = (amount != null) ? amount : 0.0;
+                        
+                        JSONObject row = new JSONObject();
+                        row.put("label", cat.substring(0, 1).toUpperCase() + cat.substring(1).toLowerCase());
+                        row.put("amount", val);
+                        reportArray.put(row);
+                        totalAmount += val;
+                    }
+                }
+
+                result.put("report", reportArray);
+                result.put("total", totalAmount);
+
+                mainHandler.post(() -> callback.onSuccess(result));
+
+            } catch (Exception e) {
+                mainHandler.post(() -> callback.onError(e.getMessage()));
+            }
+        });
     }
 }

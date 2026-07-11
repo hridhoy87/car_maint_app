@@ -136,20 +136,27 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/fragment_container"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coordinator_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:fillViewport="true"
             app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
             app:layout_constraintTop_toBottomOf="@id/app_bar_layout">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <include layout="@layout/layout_notification_banner" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:paddingBottom="24dp"
-                android:clipToPadding="false">
+                android:layout_height="match_parent"
+                android:fillViewport="true">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="24dp"
+                    android:clipToPadding="false">
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/timeline_guideline"
@@ -188,6 +195,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <com.google.android.gms.ads.AdView
             android:id="@+id/ad_view"

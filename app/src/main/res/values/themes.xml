@@ -8,7 +8,14 @@
         <item name="itemIconTint">@color/primaryColor</item>
     </style>
 
-    <style name="Theme.MyCar" parent="Base.Theme.MyCar" />
+    <style name="Theme.MyCar" parent="Base.Theme.MyCar">
+        <item name="android:datePickerDialogTheme">@style/MyDatePickerDialogTheme</item>
+    </style>
+
+    <style name="MyDatePickerDialogTheme" parent="Theme.Material3.DayNight.Dialog">
+        <item name="colorAccent">@color/brandAccent</item>
+        <item name="colorPrimary">@color/primaryColor</item>
+    </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/backgroundColor</item>

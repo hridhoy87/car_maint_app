@@ -69,7 +69,7 @@
 
     <!-- Add Vehicle Dialog -->
     <string name="add_vehicle_title">Add New Vehicle</string>
-    <string name="hint_model">Model (e.g. BMW M4)</string>
+    <string name="hint_model">Vehicle Model Name</string>
     <string name="hint_reg_number">Registration Number</string>
     <string name="hint_color">Color</string>
     <string name="hint_odo">Initial ODO Reading</string>
@@ -106,6 +106,145 @@
     <string name="mode_mute">Mute</string>
     <string name="save_reminder">SAVE REMINDER</string>
     <string name="reminder_saved">Reminder saved successfully</string>
+    <string name="no_data_for_vehicle">There are no datum to be shown for %s</string>
+    <string name="notification_mode">Notification Mode</string>
+    <string name="alarm_tone">Alarm Tone</string>
+    <string name="select_tone">Select Tone</string>
+    <string name="volume">Volume</string>
+    <string name="default_tone">Default</string>
+    <string name="select_alarm_tone">Select Alarm Tone</string>
+
+    <!-- Main Activity -->
+    <string name="error_select_vehicle">Please add or select a vehicle first</string>
+    <string name="error_fill_fields">Please fill all fields</string>
+    <string name="error_valid_numeric">Please enter valid numeric values</string>
+    <string name="error_valid_amount">Please enter a valid amount</string>
+    <string name="fuel_record_saved">Fuel record saved!</string>
+    <string name="maintenance_record_saved">Maintenance record saved!</string>
+    <string name="repair_record_saved">Repair record saved!</string>
+    <string name="enhancement_record_saved">Enhancement record saved!</string>
+    <string name="error_saving">Error saving: %s</string>
+    <string name="set_reminder">Set Reminder</string>
+    <string name="reminder_alert_message">Would you like to set a reminder for the next maintenance?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="reminder_set_for">Reminder set for %s</string>
+    <string name="fuel_title_format">Fuel Intake (%s)</string>
+
+    <!-- Maintenance Types -->
+    <string name="maint_engine_oil">Engine Oil</string>
+    <string name="maint_brake_fluid">Break Fluid</string>
+    <string name="maint_trans_fluid">Transmission Fluid</string>
+    <string name="maint_tire">Tire Replacement</string>
+    <string name="maint_brake_pad">Breakpad Replacement</string>
+    <string name="maint_clutch">Clutch Plate Replacement</string>
+    <string name="maint_wiper">Wiper Replacement</string>
+    <string name="maint_all">All</string>
+
+    <!-- Main Activity UI -->
+    <string name="section_fuel">------- Regular Fuel Intake -------</string>
+    <string name="section_maintenance">------- Periodic Maintenance -------</string>
+    <string name="section_repair">------- Abnormal Repair -------</string>
+    <string name="section_enhancement">------- Beautification | Enhancement -------</string>
+    <string name="btn_save_caps">S A V E</string>
+    <string name="hint_zero_decimal">0.00</string>
+    <string name="hint_zero_single">0.0</string>
+    <string name="hint_odo_default">00000</string>
+    <string name="unit_per_litre">/L</string>
+    <string name="maintenance_type">Maintenance Type</string>
+    <string name="shop_name">Shop Name</string>
+    <string name="hint_shop_name">Enter shop name</string>
+    <string name="repair_description">Repair Description</string>
+    <string name="hint_repair">What happened?</string>
+    <string name="improvement_details">Improvement Details</string>
+    <string name="hint_enhancement">What\'s new?</string>
+    <string name="app_logo">App Logo</string>
+
+    <string name="error_location_denied">Location permission denied</string>
+    <string name="searching_for">Searching for %s</string>
+
+    <string name="ad_sponsored">SPONSORED ADVERTISEMENT</string>
+    <string name="ad_skip_format">Skip in %ds</string>
+    <string name="ad_skip_now">Skip Ad</string>
+    <string name="ad_remaining_format">Ad ends in %ds</string>
+
+    <string name="error_parsing">Error parsing data</string>
+    <string name="error_prefix">Error: %s</string>
+
+    <string name="about_toast">MY CAR - CLASSIC PERFORMANCE v1.0</string>
+    <string name="coming_soon">Coming Soon!</string>
+    <string name="no_vehicles_available">No Vehicles Available</string>
+    <string name="unknown_model">Unknown Model</string>
+    <string name="no_vehicle">No Vehicle</string>
+    <string name="nav_restaurants_label">Restaurants</string>
+    <string name="nav_hotels_label">Hotels</string>
+    <string name="nav_atm_label">ATM</string>
+    <string name="nav_mosque_label">Mosque</string>
+
+    <string name="error_model_reg_required">Model and Reg Number are required</string>
+    <string name="error_saving_vehicle">Error saving vehicle: %s</string>
+    <string name="error_processing">Error processing data</string>
+
+    <string name="channel_reminders">Car Reminders</string>
+    <string name="notification_title">Car Reminder</string>
+
+    <string name="notification_permission_granted">Notification permission granted</string>
+    <string name="notification_permission_denied">Notification permission denied. Reminders will not show notifications.</string>
+
+    <string name="exporting_pdf">Exporting as PDF...</string>
+    <string name="month_jan">January</string>
+    <string name="month_feb">February</string>
+    <string name="month_mar">March</string>
+    <string name="month_apr">April</string>
+    <string name="month_may">May</string>
+    <string name="month_jun">June</string>
+    <string name="month_jul">July</string>
+    <string name="month_aug">August</string>
+    <string name="month_sep">September</string>
+    <string name="month_oct">October</string>
+    <string name="month_nov">November</string>
+    <string name="month_dec">December</string>
+
+    <string name="head_total">Total</string>
+    <string name="head_toll">Toll</string>
+    <string name="head_fuel">Fuel</string>
+    <string name="head_maintenance">Maintenance</string>
+    <string name="head_repair">Repair</string>
+    <string name="head_beautification">Beautification</string>
+    <string name="head_all">All</string>
+
+    <string name="table_vehicle">Vehicle</string>
+    <string name="table_maint">Maint.</string>
+    <string name="table_beauty">Beauty</string>
+
+    <string name="title_monthly_report">MONTHLY REPORT</string>
+    <string name="title_weekly_trend">WEEKLY TREND</string>
+    <string name="title_yearly_aggregate">YEARLY AGGREGATE</string>
+    <string name="title_monthly_trend">MONTHLY TREND</string>
+    <string name="title_vehicle_comparison">VEHICLE COMPARISON</string>
+    <string name="title_expenditure_comparison">TOTAL EXPENDITURE COMPARISON</string>
+    <string name="title_trip_analysis">TRIP COST ANALYSIS</string>
+    <string name="btn_monthly">Monthly</string>
+    <string name="btn_yearly">Yearly</string>
+    <string name="label_total_trip_costs">Total Trip Costs</string>
+    <string name="btn_export_pdf_caps">EXPORT THIS AS A PDF</string>
+    <string name="to_range"> to </string>
+    <string name="year">Year</string>
+
+    <string name="title_select_categories">Select Categories</string>
+    <string name="btn_ok">OK</string>
+    <string name="select_placeholder">Select...</string>
+    <string name="all_selected">All Selected</string>
+
+    <string name="unit_litre_short">L</string>
+    <string name="unit_eur">EUR</string>
+    <string name="unit_sar">SAR</string>
+    <string name="unit_bdt">BDT</string>
+
+    <!-- Data -->
+    <string name="error_vehicle_not_found">Vehicle not found</string>
+    <string name="daily_activities">Daily Activities</string>
+    <string name="items_summary">%1$d Items • Click to expand</string>
 
     <!-- AdMob -->
     <string name="ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>

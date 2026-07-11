@@ -1,5 +1,6 @@
 package hobby.asad.mushad.mycar;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,9 +49,26 @@ public class ReminderActivity extends BaseActivity {
         recyclerView = findViewById(R.id.recycler_reminders);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        reminders = ReminderManager.loadReminders(this);
-        adapter = new ReminderAdapter(this, reminders);
-        recyclerView.setAdapter(adapter);
+        loadReminders();
+    }
+
+    private void loadReminders() {
+        new Thread(() -> {
+            reminders = ReminderManager.loadReminders(this);
+            ReminderManager.refreshLastMaintenanceDates(this, reminders);
+            runOnUiThread(() -> {
+                adapter = new ReminderAdapter(this, reminders);
+                recyclerView.setAdapter(adapter);
+            });
+        }).start();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (adapter != null) {
+            adapter.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void checkPermissions() {
@@ -65,9 +84,9 @@ public class ReminderActivity extends BaseActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.notification_permission_granted, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Notification permission denied. Reminders will not show notifications.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.notification_permission_denied, Toast.LENGTH_LONG).show();
             }
         }
     }

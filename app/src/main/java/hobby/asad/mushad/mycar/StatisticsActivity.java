@@ -35,6 +35,14 @@ public class StatisticsActivity extends BaseActivity {
     }
 
     @Override
+    protected void onCarSelected(String carName, int position) {
+        StatisticsDashboardFragment fragment = (StatisticsDashboardFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (fragment != null) {
+            fragment.onCarSelected(carName);
+        }
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);

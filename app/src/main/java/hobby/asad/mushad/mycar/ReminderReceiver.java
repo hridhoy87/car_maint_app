@@ -22,18 +22,32 @@ public class ReminderReceiver extends BroadcastReceiver {
         String title = intent.getStringExtra("reminder_title");
         String mode = intent.getStringExtra("notification_mode");
         String idStr = intent.getStringExtra("reminder_id");
+        String toneUri = intent.getStringExtra("tone_uri");
+        int volume = intent.getIntExtra("volume", 70);
         
         if (idStr == null) return;
         
         int id = Integer.parseInt(idStr);
-        showNotification(context, id, title, mode);
+        showNotification(context, id, title, mode, toneUri, volume);
     }
 
-    private void showNotification(Context context, int id, String title, String mode) {
+    private void showNotification(Context context, int id, String title, String mode, String toneUri, int volume) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Car Reminders", NotificationManager.IMPORTANCE_HIGH);
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, context.getString(R.string.channel_reminders), NotificationManager.IMPORTANCE_HIGH);
         
+        Uri soundUri = null;
+        if ("RING".equals(mode)) {
+            if (toneUri != null) {
+                soundUri = Uri.parse(toneUri);
+            } else {
+                soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                if (soundUri == null) {
+                    soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                }
+            }
+        }
+
         if ("VIBRATE".equals(mode)) {
             channel.enableVibration(true);
             channel.setSound(null, null);
@@ -42,15 +56,13 @@ public class ReminderReceiver extends BroadcastReceiver {
             channel.setSound(null, null);
         } else {
             channel.enableVibration(true);
-            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-            if (alarmSound == null) {
-                alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            if (soundUri != null) {
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .build();
+                channel.setSound(soundUri, audioAttributes);
             }
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .build();
-            channel.setSound(alarmSound, audioAttributes);
         }
         notificationManager.createNotificationChannel(channel);
 
@@ -60,7 +72,7 @@ public class ReminderReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_reminder)
-                .setContentTitle("Car Reminder")
+                .setContentTitle(context.getString(R.string.notification_title))
                 .setContentText(title)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
@@ -74,16 +86,9 @@ public class ReminderReceiver extends BroadcastReceiver {
             builder.setVibrate(null);
             builder.setSound(null);
         } else {
-            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-            if (alarmSound == null) {
-                alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            }
-            builder.setSound(alarmSound);
+            builder.setSound(soundUri);
         }
 
         notificationManager.notify(id, builder.build());
-        
-        // If mode is RING or VIBRATE, and user said "set off alarm", maybe we should trigger something more?
-        // But for now, high priority notification is a good start.
     }
 }
