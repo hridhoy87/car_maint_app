@@ -31,6 +31,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Locale;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import androidx.annotation.NonNull;
+import hobby.asad.mushad.mycar.database.Vehicle;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -39,7 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected BottomNavigationView bottomNavigationView;
     protected Toolbar toolbar;
 
-    protected TextView drawerCarInitial, drawerCarName, drawerCarOdo;
+    protected TextView drawerCarInitial, drawerCarName, drawerCarReg, drawerCarOdo;
     protected TextView toolbarCarInitial, toolbarOdoDisplay;
     protected Spinner carSelector;
     protected AdView adView;
@@ -113,6 +121,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             View headerView = navigationView.getHeaderView(0);
             drawerCarInitial = headerView.findViewById(R.id.drawer_car_initial);
             drawerCarName = headerView.findViewById(R.id.drawer_car_name);
+            drawerCarReg = headerView.findViewById(R.id.drawer_car_reg);
             drawerCarOdo = headerView.findViewById(R.id.drawer_car_odo);
         }
 
@@ -278,26 +287,52 @@ public abstract class BaseActivity extends AppCompatActivity {
             hobby.asad.mushad.mycar.database.AppDatabase db = hobby.asad.mushad.mycar.database.AppDatabase.getDatabase(this);
             java.util.List<hobby.asad.mushad.mycar.database.Vehicle> vehicles = db.vehicleDao().getAllVehicles();
             
-            java.util.List<String> modelNames = new java.util.ArrayList<>();
-            if (vehicles.isEmpty()) {
-                modelNames.add(getString(R.string.no_vehicles_available));
-            } else {
-                for (hobby.asad.mushad.mycar.database.Vehicle v : vehicles) {
-                    modelNames.add(v.model != null ? v.model : getString(R.string.unknown_model));
-                }
-            }
-
-            String[] carsArray = modelNames.toArray(new String[0]);
-
             new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
                 this.vehiclesList = vehicles;
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, android.R.id.text1, carsArray);
-                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+                
+                ArrayAdapter<Vehicle> adapter = new ArrayAdapter<Vehicle>(this, R.layout.spinner_item, android.R.id.text1, vehicles) {
+                    @NonNull
+                    @Override
+                    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        return createItemView(position, convertView, parent, false);
+                    }
+
+                    @Override
+                    public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        return createItemView(position, convertView, parent, true);
+                    }
+
+                    private View createItemView(int position, View convertView, ViewGroup parent, boolean isDropDown) {
+                        View view = convertView;
+                        if (view == null) {
+                            int layout = isDropDown ? R.layout.spinner_dropdown_item : R.layout.spinner_item;
+                            view = LayoutInflater.from(getContext()).inflate(layout, parent, false);
+                        }
+                        TextView tv = view.findViewById(android.R.id.text1);
+                        Vehicle v = getItem(position);
+                        if (v != null) {
+                            String model = v.model != null ? v.model : getString(R.string.unknown_model);
+                            String reg = v.registrationNumber != null ? v.registrationNumber : "";
+                            
+                            SpannableStringBuilder ssb = new SpannableStringBuilder(model);
+                            if (!reg.isEmpty()) {
+                                ssb.append("\n").append(reg);
+                                ssb.setSpan(new AbsoluteSizeSpan(10, true), model.length(), ssb.length(), SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                ssb.setSpan(new ForegroundColorSpan(androidx.core.content.ContextCompat.getColor(BaseActivity.this, R.color.accentColor)), model.length(), ssb.length(), SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }
+                            tv.setText(ssb);
+                        } else {
+                            tv.setText(getString(R.string.no_vehicles_available));
+                        }
+                        return view;
+                    }
+                };
+
                 carSelector.setAdapter(adapter);
 
                 SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
                 int lastSelected = prefs.getInt("selected_car_index", 0);
-                if (lastSelected >= carsArray.length) lastSelected = 0;
+                if (lastSelected >= vehicles.size()) lastSelected = 0;
                 carSelector.setSelection(lastSelected);
 
                 carSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -306,14 +341,14 @@ public abstract class BaseActivity extends AppCompatActivity {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         prefs.edit().putInt("selected_car_index", position).apply();
-                        String selectedCar = carsArray[position];
+                        Vehicle selectedVehicle = vehicles.get(position);
+                        String selectedCar = selectedVehicle.model;
+                        String reg = selectedVehicle.registrationNumber;
+                        int odo = selectedVehicle.currentOdometer;
                         
-                        int odo = 0;
-                        if (!vehicles.isEmpty() && position < vehicles.size()) {
-                            odo = vehicles.get(position).currentOdometer;
-                        }
-                        
-                        updateCarUI(selectedCar, odo);
+                        prefs.edit().putString("selected_car_reg", reg).apply();
+
+                        updateCarUI(selectedCar, reg, odo);
 
                         if (isFirstSelection) {
                             isFirstSelection = false;
@@ -330,12 +365,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void updateCarUI(String selectedCar, int odo) {
+    private void updateCarUI(String selectedCar, String reg, int odo) {
         if (getString(R.string.no_vehicles_available).equals(selectedCar)) {
             if (toolbarCarInitial != null) toolbarCarInitial.setText("-");
             if (toolbarOdoDisplay != null) toolbarOdoDisplay.setText(getString(R.string.odo_format, 0));
             if (drawerCarInitial != null) drawerCarInitial.setText("-");
             if (drawerCarName != null) drawerCarName.setText(R.string.no_vehicle);
+            if (drawerCarReg != null) drawerCarReg.setText("");
             if (drawerCarOdo != null) drawerCarOdo.setText(getString(R.string.odo_format, 0));
             return;
         }
@@ -343,6 +379,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (toolbarOdoDisplay != null) toolbarOdoDisplay.setText(getString(R.string.odo_format, odo));
         if (drawerCarInitial != null) drawerCarInitial.setText(String.valueOf(selectedCar.charAt(0)));
         if (drawerCarName != null) drawerCarName.setText(selectedCar);
+        if (drawerCarReg != null) drawerCarReg.setText(reg);
         if (drawerCarOdo != null) drawerCarOdo.setText(getString(R.string.odo_format, odo));
     }
 
@@ -355,7 +392,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if (newOdo > v.currentOdometer) {
                     v.currentOdometer = newOdo;
                     if (carSelector != null && carSelector.getSelectedItemPosition() == i) {
-                        updateCarUI(v.model, newOdo);
+                        updateCarUI(v.model, v.registrationNumber, newOdo);
                     }
                 }
                 break;
